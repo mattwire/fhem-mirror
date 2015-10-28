@@ -168,14 +168,13 @@ rateofchange_Define($$$)
   $hash->{direction} = $direction;
   $hash->{cmd1_gt} = SemicolonEscape($cmd1_gt);
   $hash->{cmd2_lt} = SemicolonEscape($cmd2_lt);
-  $hash->{STATE} = 'initialized';
   $hash->{calcIntervals} = 5;
   $hash->{INTERVAL} = $timePeriod/$hash->{calcIntervals}; # Min timePeriod is 5 so min interval is 1 second
   my @readingsBuf = ();
   $hash->{readingsBuffer} = \@readingsBuf;
   
   # Initialise readings
-  readingsSingleUpdate($hash, "state", 0, 1);
+  readingsSingleUpdate($hash, "state", "Initialized", 1);
   rateofchange_set_state($hash);
   
   # Trigger first calculation cycle
@@ -406,16 +405,12 @@ rateofchange_Attr(@)
     # Disable on 1, enable on anything else.
     if ($value eq "1")
     {
-      $hash->{STATE} = "disabled";
-      readingsBeginUpdate ($hash);
-      readingsBulkUpdate  ($hash, "state", "disabled");
-      readingsEndUpdate   ($hash, 1);
+      readingsSingleUpdate ($hash, "state", "disabled", 1);
     }
     else
     {
-      $hash->{STATE} = "initialized";
       readingsBeginUpdate ($hash);
-      readingsBulkUpdate  ($hash, "state", "initialized");
+      readingsBulkUpdate  ($hash, "state", "Initialized");
       readingsBulkUpdate  ($hash, "cmd","wait for next cmd");
       readingsEndUpdate   ($hash, 1);
     }
