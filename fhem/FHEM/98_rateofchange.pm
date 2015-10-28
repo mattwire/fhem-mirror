@@ -176,9 +176,12 @@ rateofchange_Define($$$)
   $hash->{cmd1_gt} = SemicolonEscape($cmd1_gt);
   $hash->{cmd2_lt} = SemicolonEscape($cmd2_lt);
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
   $hash->{STATE} = 'initialized';
 >>>>>>> 2057217a4... Add new module rateofchange
+=======
+>>>>>>> 6040306b9... Add new module rateofchange
   $hash->{calcIntervals} = 5;
   $hash->{INTERVAL} = $timePeriod/$hash->{calcIntervals}; # Min timePeriod is 5 so min interval is 1 second
   my @readingsBuf = ();
@@ -186,10 +189,14 @@ rateofchange_Define($$$)
   
   # Initialise readings
 <<<<<<< HEAD
+<<<<<<< HEAD
   readingsSingleUpdate($hash, "state", "Initialized", 1);
 =======
   readingsSingleUpdate($hash, "state", 0, 1);
 >>>>>>> 2057217a4... Add new module rateofchange
+=======
+  readingsSingleUpdate($hash, "state", "Initialized", 1);
+>>>>>>> 6040306b9... Add new module rateofchange
   rateofchange_set_state($hash);
   
   # Trigger first calculation cycle
@@ -496,6 +503,7 @@ rateofchange_Attr(@)
     if ($value eq "1")
     {
 <<<<<<< HEAD
+<<<<<<< HEAD
       readingsSingleUpdate ($hash, "state", "disabled", 1);
     }
     else
@@ -507,13 +515,19 @@ rateofchange_Attr(@)
       readingsBeginUpdate ($hash);
       readingsBulkUpdate  ($hash, "state", "disabled");
       readingsEndUpdate   ($hash, 1);
+=======
+      readingsSingleUpdate ($hash, "state", "disabled", 1);
+>>>>>>> 6040306b9... Add new module rateofchange
     }
     else
     {
-      $hash->{STATE} = "initialized";
       readingsBeginUpdate ($hash);
+<<<<<<< HEAD
       readingsBulkUpdate  ($hash, "state", "initialized");
 >>>>>>> 2057217a4... Add new module rateofchange
+=======
+      readingsBulkUpdate  ($hash, "state", "Initialized");
+>>>>>>> 6040306b9... Add new module rateofchange
       readingsBulkUpdate  ($hash, "cmd","wait for next cmd");
       readingsEndUpdate   ($hash, 1);
     }
