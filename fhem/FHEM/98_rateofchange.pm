@@ -31,6 +31,10 @@ rateofchange_Initialize($)
 {
   my ($hash) = @_;
   $hash->{DefFn}   = "rateofchange_Define";
+<<<<<<< HEAD
+=======
+  $hash->{NotifyFn} = "rateofchange_Notify";
+>>>>>>> 2057217a4... Add new module rateofchange
   $hash->{NotifyOrderPrefix} = "10-";   # Want to be called before the rest
   $hash->{AttrList} = "disable:0,1 " .
                       "maxRuntime " .
@@ -168,13 +172,21 @@ rateofchange_Define($$$)
   $hash->{direction} = $direction;
   $hash->{cmd1_gt} = SemicolonEscape($cmd1_gt);
   $hash->{cmd2_lt} = SemicolonEscape($cmd2_lt);
+<<<<<<< HEAD
+=======
+  $hash->{STATE} = 'initialized';
+>>>>>>> 2057217a4... Add new module rateofchange
   $hash->{calcIntervals} = 5;
   $hash->{INTERVAL} = $timePeriod/$hash->{calcIntervals}; # Min timePeriod is 5 so min interval is 1 second
   my @readingsBuf = ();
   $hash->{readingsBuffer} = \@readingsBuf;
   
   # Initialise readings
+<<<<<<< HEAD
   readingsSingleUpdate($hash, "state", "Initialized", 1);
+=======
+  readingsSingleUpdate($hash, "state", 0, 1);
+>>>>>>> 2057217a4... Add new module rateofchange
   rateofchange_set_state($hash);
   
   # Trigger first calculation cycle
@@ -193,6 +205,20 @@ sub rateofchange_Undefine($$)
   return undef;
 }
 
+<<<<<<< HEAD
+=======
+##########################
+sub
+rateofchange_Notify($$)
+{
+  my ($hash, $dev) = @_;
+  my $pn = $hash->{NAME};
+  return "" if(IsDisabled($pn));
+
+  return rateofchange_calculate($hash);
+}
+
+>>>>>>> 2057217a4... Add new module rateofchange
 #####################################
 # Calculate rateofchange
 sub
@@ -202,12 +228,20 @@ rateofchange_calculate($)
   my $pn = $hash->{NAME};
   return "" if(IsDisabled($pn));
 
+<<<<<<< HEAD
   my $sensor_value = ReadingsVal("$hash->{sensor}", "$hash->{sensor_reading}", 0);
   $sensor_value =~ s/[^\d\.]//g;
   
   # Do nothing if we have no reading
   if (!defined($sensor_value) or ($sensor_value eq "") or ($sensor_value !~ m/^[\d\.]*$/ )) {
     Log3 ($hash, 5, "$hash->{NAME}_calculate: Invalid sensor reading for $hash->{sensor} ($hash->{sensor_reading}): $sensor_value");
+=======
+  my $sensor_value = ReadingsVal($hash->{sensor}, $hash->{sensor_reading}, 0);
+  
+  # Do nothing if we have no reading
+  if (!defined($sensor_value) or ($sensor_value eq "") or ($sensor_value !~ m/^[\d\.]*$/ )) {
+    Log3 ($hash, 5, "$hash->{NAME}_calculate: Invalid sensor reading for $hash->{sensor} ($hash->{sensor_reading})");
+>>>>>>> 2057217a4... Add new module rateofchange
     rateofchange_timer($hash);
     return undef;
   }
@@ -250,6 +284,7 @@ rateofchange_calculate($)
   # Which command to trigger?
   my $cmd_value = 1;
   # Both directions: Match on absolute value of rateofchange
+<<<<<<< HEAD
   $cmd_value = 0 if (($hash->{direction} == 0) and (abs($rateofchange) >= $hash->{minRate}) 
     and (abs($rateofchange) <= $hash->{maxRate}));
    # Up only: match on positive rateofchange only
@@ -258,6 +293,16 @@ rateofchange_calculate($)
   # Down only: negate rate of change so we match on negative only
   $cmd_value = 0 if (($hash->{direction} == 2) and (-($rateofchange) >= $hash->{minRate}) 
     and (-($rateofchange) <= $hash->{maxRate}));
+=======
+  $cmd_value = 0 if (($hash->{direction} == 0) and (abs($rateofchange) > $hash->{minRate}) 
+    and (abs($rateofchange) < $hash->{maxRate}));
+   # Up only: match on positive rateofchange only
+  $cmd_value = 0 if (($hash->{direction} == 1) and ($rateofchange > $hash->{minRate}) 
+    and ($rateofchange < $hash->{maxRate}));
+  # Down only: negate rate of change so we match on negative only
+  $cmd_value = 0 if (($hash->{direction} == 2) and (-($rateofchange) > $hash->{minRate}) 
+    and (-($rateofchange) < $hash->{maxRate}));
+>>>>>>> 2057217a4... Add new module rateofchange
   
   # Trigger actual command
   rateofchange_setValue($hash, $cmd_value);
@@ -376,6 +421,7 @@ rateofchange_timer($)
   my ($hash) = @_;
 
   # Remove any existing timers and trigger a new one
+<<<<<<< HEAD
 #  foreach my $args (keys %intAt) 
 #  {
 #    if (($intAt{$args}{ARG} eq $hash) && ($intAt{$args}{FN} eq 'rateofchange_calculate'))
@@ -386,6 +432,17 @@ rateofchange_timer($)
 #  }
   # INTERVAL is in seconds, add to gettimeofday
   RemoveInternalTimer($hash);
+=======
+  foreach my $args (keys %intAt) 
+  {
+    if (($intAt{$args}{ARG} eq $hash) && ($intAt{$args}{FN} eq 'rateofchange_calculate'))
+    {
+      #Log3 ($hash, 5, "$hash->{NAME}_timer: Remove timer at: ".$intAt{$args}{TRIGGERTIME});
+      delete($intAt{$args});
+    }
+  }
+  # INTERVAL is in seconds, add to gettimeofday
+>>>>>>> 2057217a4... Add new module rateofchange
   InternalTimer(gettimeofday()+($hash->{INTERVAL}), "rateofchange_calculate", $hash, 0);
 }
 
@@ -405,12 +462,25 @@ rateofchange_Attr(@)
     # Disable on 1, enable on anything else.
     if ($value eq "1")
     {
+<<<<<<< HEAD
       readingsSingleUpdate ($hash, "state", "disabled", 1);
     }
     else
     {
       readingsBeginUpdate ($hash);
       readingsBulkUpdate  ($hash, "state", "Initialized");
+=======
+      $hash->{STATE} = "disabled";
+      readingsBeginUpdate ($hash);
+      readingsBulkUpdate  ($hash, "state", "disabled");
+      readingsEndUpdate   ($hash, 1);
+    }
+    else
+    {
+      $hash->{STATE} = "initialized";
+      readingsBeginUpdate ($hash);
+      readingsBulkUpdate  ($hash, "state", "initialized");
+>>>>>>> 2057217a4... Add new module rateofchange
       readingsBulkUpdate  ($hash, "cmd","wait for next cmd");
       readingsEndUpdate   ($hash, 1);
     }
