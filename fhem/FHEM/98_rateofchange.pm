@@ -34,6 +34,7 @@ rateofchange_Initialize($)
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
   $hash->{NotifyFn} = "rateofchange_Notify";
 >>>>>>> 2057217a4... Add new module rateofchange
@@ -42,6 +43,8 @@ rateofchange_Initialize($)
 =======
   $hash->{NotifyFn} = "rateofchange_Notify";
 >>>>>>> aad97503b... Add new module rateofchange
+=======
+>>>>>>> 00a5da330... Fixes.  Strip non-numeric data from sensor value. Less than or equal to, greater than or equal to in comparators for min/max rate.  Remove unused notify function
   $hash->{NotifyOrderPrefix} = "10-";   # Want to be called before the rest
   $hash->{AttrList} = "disable:0,1 " .
                       "maxRuntime " .
@@ -230,6 +233,7 @@ sub rateofchange_Undefine($$)
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 =======
 >>>>>>> aad97503b... Add new module rateofchange
@@ -250,6 +254,8 @@ rateofchange_Notify($$)
 >>>>>>> 72834d5e5... Fixes.  Strip non-numeric data from sensor value. Less than or equal to, greater than or equal to in comparators for min/max rate.  Remove unused notify function
 =======
 >>>>>>> aad97503b... Add new module rateofchange
+=======
+>>>>>>> 00a5da330... Fixes.  Strip non-numeric data from sensor value. Less than or equal to, greater than or equal to in comparators for min/max rate.  Remove unused notify function
 #####################################
 # Calculate rateofchange
 sub
@@ -259,6 +265,7 @@ rateofchange_calculate($)
   my $pn = $hash->{NAME};
   return "" if(IsDisabled($pn));
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -288,6 +295,14 @@ rateofchange_calculate($)
 >>>>>>> 72834d5e5... Fixes.  Strip non-numeric data from sensor value. Less than or equal to, greater than or equal to in comparators for min/max rate.  Remove unused notify function
 =======
 >>>>>>> aad97503b... Add new module rateofchange
+=======
+  my $sensor_value = ReadingsVal("$hash->{sensor}", "$hash->{sensor_reading}", 0);
+  $sensor_value =~ s/[^\d\.]//g;
+  
+  # Do nothing if we have no reading
+  if (!defined($sensor_value) or ($sensor_value eq "") or ($sensor_value !~ m/^[\d\.]*$/ )) {
+    Log3 ($hash, 5, "$hash->{NAME}_calculate: Invalid sensor reading for $hash->{sensor} ($hash->{sensor_reading}): $sensor_value");
+>>>>>>> 00a5da330... Fixes.  Strip non-numeric data from sensor value. Less than or equal to, greater than or equal to in comparators for min/max rate.  Remove unused notify function
     rateofchange_timer($hash);
     return undef;
   }
@@ -333,6 +348,7 @@ rateofchange_calculate($)
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   $cmd_value = 0 if (($hash->{direction} == 0) and (abs($rateofchange) >= $hash->{minRate}) 
     and (abs($rateofchange) <= $hash->{maxRate}));
    # Up only: match on positive rateofchange only
@@ -363,13 +379,22 @@ rateofchange_calculate($)
 =======
   $cmd_value = 0 if (($hash->{direction} == 0) and (abs($rateofchange) > $hash->{minRate}) 
     and (abs($rateofchange) < $hash->{maxRate}));
+=======
+  $cmd_value = 0 if (($hash->{direction} == 0) and (abs($rateofchange) >= $hash->{minRate}) 
+    and (abs($rateofchange) <= $hash->{maxRate}));
+>>>>>>> 00a5da330... Fixes.  Strip non-numeric data from sensor value. Less than or equal to, greater than or equal to in comparators for min/max rate.  Remove unused notify function
    # Up only: match on positive rateofchange only
-  $cmd_value = 0 if (($hash->{direction} == 1) and ($rateofchange > $hash->{minRate}) 
-    and ($rateofchange < $hash->{maxRate}));
+  $cmd_value = 0 if (($hash->{direction} == 1) and ($rateofchange >= $hash->{minRate}) 
+    and ($rateofchange <= $hash->{maxRate}));
   # Down only: negate rate of change so we match on negative only
+<<<<<<< HEAD
   $cmd_value = 0 if (($hash->{direction} == 2) and (-($rateofchange) > $hash->{minRate}) 
     and (-($rateofchange) < $hash->{maxRate}));
 >>>>>>> aad97503b... Add new module rateofchange
+=======
+  $cmd_value = 0 if (($hash->{direction} == 2) and (-($rateofchange) >= $hash->{minRate}) 
+    and (-($rateofchange) <= $hash->{maxRate}));
+>>>>>>> 00a5da330... Fixes.  Strip non-numeric data from sensor value. Less than or equal to, greater than or equal to in comparators for min/max rate.  Remove unused notify function
   
   # Trigger actual command
   rateofchange_setValue($hash, $cmd_value);
@@ -491,8 +516,11 @@ rateofchange_timer($)
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 72834d5e5... Fixes.  Strip non-numeric data from sensor value. Less than or equal to, greater than or equal to in comparators for min/max rate.  Remove unused notify function
+=======
+>>>>>>> 00a5da330... Fixes.  Strip non-numeric data from sensor value. Less than or equal to, greater than or equal to in comparators for min/max rate.  Remove unused notify function
 #  foreach my $args (keys %intAt) 
 #  {
 #    if (($intAt{$args}{ARG} eq $hash) && ($intAt{$args}{FN} eq 'rateofchange_calculate'))
@@ -501,6 +529,7 @@ rateofchange_timer($)
 #      delete($intAt{$args});
 #    }
 #  }
+<<<<<<< HEAD
 <<<<<<< HEAD
   # INTERVAL is in seconds, add to gettimeofday
   RemoveInternalTimer($hash);
@@ -524,6 +553,10 @@ rateofchange_timer($)
 >>>>>>> 72834d5e5... Fixes.  Strip non-numeric data from sensor value. Less than or equal to, greater than or equal to in comparators for min/max rate.  Remove unused notify function
 =======
 >>>>>>> aad97503b... Add new module rateofchange
+=======
+  # INTERVAL is in seconds, add to gettimeofday
+  RemoveInternalTimer($hash);
+>>>>>>> 00a5da330... Fixes.  Strip non-numeric data from sensor value. Less than or equal to, greater than or equal to in comparators for min/max rate.  Remove unused notify function
   InternalTimer(gettimeofday()+($hash->{INTERVAL}), "rateofchange_calculate", $hash, 0);
 }
 
