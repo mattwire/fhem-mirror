@@ -31,7 +31,6 @@ rateofchange_Initialize($)
 {
   my ($hash) = @_;
   $hash->{DefFn}   = "rateofchange_Define";
-  $hash->{NotifyFn} = "rateofchange_Notify";
   $hash->{NotifyOrderPrefix} = "10-";   # Want to be called before the rest
   $hash->{AttrList} = "disable:0,1 " .
                       "maxRuntime " .
@@ -195,17 +194,6 @@ sub rateofchange_Undefine($$)
   return undef;
 }
 
-##########################
-sub
-rateofchange_Notify($$)
-{
-  my ($hash, $dev) = @_;
-  my $pn = $hash->{NAME};
-  return "" if(IsDisabled($pn));
-
-  return rateofchange_calculate($hash);
-}
-
 #####################################
 # Calculate rateofchange
 sub
@@ -215,11 +203,12 @@ rateofchange_calculate($)
   my $pn = $hash->{NAME};
   return "" if(IsDisabled($pn));
 
-  my $sensor_value = ReadingsVal($hash->{sensor}, $hash->{sensor_reading}, 0);
+  my $sensor_value = ReadingsVal("$hash->{sensor}", "$hash->{sensor_reading}", 0);
+  $sensor_value =~ s/[^\d\.]//g;
   
   # Do nothing if we have no reading
   if (!defined($sensor_value) or ($sensor_value eq "") or ($sensor_value !~ m/^[\d\.]*$/ )) {
-    Log3 ($hash, 5, "$hash->{NAME}_calculate: Invalid sensor reading for $hash->{sensor} ($hash->{sensor_reading})");
+    Log3 ($hash, 5, "$hash->{NAME}_calculate: Invalid sensor reading for $hash->{sensor} ($hash->{sensor_reading}): $sensor_value");
     rateofchange_timer($hash);
     return undef;
   }
@@ -262,14 +251,14 @@ rateofchange_calculate($)
   # Which command to trigger?
   my $cmd_value = 1;
   # Both directions: Match on absolute value of rateofchange
-  $cmd_value = 0 if (($hash->{direction} == 0) and (abs($rateofchange) > $hash->{minRate}) 
-    and (abs($rateofchange) < $hash->{maxRate}));
+  $cmd_value = 0 if (($hash->{direction} == 0) and (abs($rateofchange) >= $hash->{minRate}) 
+    and (abs($rateofchange) <= $hash->{maxRate}));
    # Up only: match on positive rateofchange only
-  $cmd_value = 0 if (($hash->{direction} == 1) and ($rateofchange > $hash->{minRate}) 
-    and ($rateofchange < $hash->{maxRate}));
+  $cmd_value = 0 if (($hash->{direction} == 1) and ($rateofchange >= $hash->{minRate}) 
+    and ($rateofchange <= $hash->{maxRate}));
   # Down only: negate rate of change so we match on negative only
-  $cmd_value = 0 if (($hash->{direction} == 2) and (-($rateofchange) > $hash->{minRate}) 
-    and (-($rateofchange) < $hash->{maxRate}));
+  $cmd_value = 0 if (($hash->{direction} == 2) and (-($rateofchange) >= $hash->{minRate}) 
+    and (-($rateofchange) <= $hash->{maxRate}));
   
   # Trigger actual command
   rateofchange_setValue($hash, $cmd_value);
@@ -388,15 +377,16 @@ rateofchange_timer($)
   my ($hash) = @_;
 
   # Remove any existing timers and trigger a new one
-  foreach my $args (keys %intAt) 
-  {
-    if (($intAt{$args}{ARG} eq $hash) && ($intAt{$args}{FN} eq 'rateofchange_calculate'))
-    {
-      #Log3 ($hash, 5, "$hash->{NAME}_timer: Remove timer at: ".$intAt{$args}{TRIGGERTIME});
-      delete($intAt{$args});
-    }
-  }
+#  foreach my $args (keys %intAt) 
+#  {
+#    if (($intAt{$args}{ARG} eq $hash) && ($intAt{$args}{FN} eq 'rateofchange_calculate'))
+#    {
+#      Log3 ($hash, 5, "$hash->{NAME}_timer: Remove timer at: ".$intAt{$args}{TRIGGERTIME});
+#      delete($intAt{$args});
+#    }
+#  }
   # INTERVAL is in seconds, add to gettimeofday
+  RemoveInternalTimer($hash);
   InternalTimer(gettimeofday()+($hash->{INTERVAL}), "rateofchange_calculate", $hash, 0);
 }
 
