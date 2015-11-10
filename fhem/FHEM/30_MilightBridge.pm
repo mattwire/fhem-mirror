@@ -102,6 +102,8 @@ sub MilightBridge_Define($$)
   # Set Attributes
   $attr{$name}{"event-on-change-reading"} = "state" if (!defined($attr{$name}{"event-on-change-reading"}));
   $attr{$name}{"checkInterval"} = 10 if (!defined($attr{$name}{"checkInterval"}));
+  
+  ReadingsSingleUpdate($hash, "state", "Initialized", 1);
 
   delete $hash->{helper}{RUNNING_PID};
 
@@ -109,9 +111,15 @@ sub MilightBridge_Define($$)
 
   # Set state
   $hash->{SENDFAIL} = 0;
+<<<<<<< HEAD
 
   # Get initial bridge state
   MilightBridge_SetNextTimer($hash);
+=======
+  
+  # Get initial bridge state
+  MilightBridge_State($hash);
+>>>>>>> f7176f71e... Allow ping state check to be disabled, use state reading instead of hash->{STATE} directly
 
   return undef;
 }
@@ -156,8 +164,12 @@ sub MilightBridge_Attr($$$$) {
       $attr{$name}{"checkInterval"} = 10;
       return "checkInterval is required in s (default: 10, min: 0)";
     }
+<<<<<<< HEAD
     readingsSingleUpdate($hash, "state", "Initialized", 1);
     MilightBridge_SetNextTimer($hash);
+=======
+    ReadingsSingleUpdate($hash, "state", "Initialized", 1);
+>>>>>>> f7176f71e... Allow ping state check to be disabled, use state reading instead of hash->{STATE} directly
   }
   elsif ($attribute eq "protocol")
   {
@@ -179,11 +191,19 @@ sub MilightBridge_Attr($$$$) {
     # Disable on 1, enable on anything else.
     if ($value eq "1")
     {
+<<<<<<< HEAD
       readingsSingleUpdate($hash, "state", "disabled", 1);
     }
     else
     {
       readingsSingleUpdate($hash, "state", "Initialized", 1);
+=======
+      ReadingsSingleUpdate($hash, "state", "disabled", 1);
+    }
+    else
+    {
+      ReadingsSingleUpdate($hash, "state", "Initialized", 1);
+>>>>>>> f7176f71e... Allow ping state check to be disabled, use state reading instead of hash->{STATE} directly
     }
   }
 
@@ -209,11 +229,30 @@ sub MilightBridge_Notify($$)
 sub MilightBridge_SetNextTimer($)
 {
   my ($hash) = @_;
+<<<<<<< HEAD
   # Check state every X seconds
   RemoveInternalTimer($hash);
   my $interval=AttrVal($hash->{NAME}, "checkInterval", "10");
   if ($interval > 0) {
     InternalTimer(gettimeofday() + $interval, "MilightBridge_DoPingStart", $hash, 0);
+=======
+  
+  if (AttrVal($hash->{NAME}, "checkInterval", "10") == 0)
+  {
+    Log3 ( $hash, 5, "$hash->{NAME}_State: Bridge status disabled");
+    return undef;
+  }
+  
+  Log3 ( $hash, 5, "$hash->{NAME}_State: Checking Bridge Status");
+  
+  # Do a ping check to see if bridge is reachable
+  # check via ping
+  my $pingstatus = "unreachable";
+  my $p;
+  if(defined($attr{$hash->{NAME}}{tcpPing}))
+  {
+    $p = Net::Ping->new('tcp');
+>>>>>>> f7176f71e... Allow ping state check to be disabled, use state reading instead of hash->{STATE} directly
   }
 }
 
@@ -258,9 +297,17 @@ sub MilightBridge_DoPing(@)
   my $result = $p->ping($host, $timeout);
   $p->close();
 
+<<<<<<< HEAD
   $result="" if !(defined($result));
   return "$name|$result";
 }
+=======
+  # Update readings
+  readingsBeginUpdate($hash);
+  readingsBulkUpdate($hash, "state", $pingstatus);
+  readingsBulkUpdate( $hash, "sendFail", $hash->{SENDFAIL});
+  readingsEndUpdate($hash, 1);
+>>>>>>> f7176f71e... Allow ping state check to be disabled, use state reading instead of hash->{STATE} directly
 
 #####################################
 # Ping thread completed
