@@ -258,11 +258,11 @@ sub ping_DoPingAbort($)
     # Disable on 1, enable on anything else.
     if ($value eq "1")
     {
-      ReadingsSingleUpdate($hash, "state", "disabled", 1);
+      readingsSingleUpdate($hash, "state", "disabled", 1);
     }
     else
     {
-      ReadingsSingleUpdate($hash, "state", "Initialized", 1);
+      readingsSingleUpdate($hash, "state", "Initialized", 1);
     }
   }
 
