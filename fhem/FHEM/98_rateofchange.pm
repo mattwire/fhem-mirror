@@ -194,6 +194,7 @@ rateofchange_Define($$$)
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
   $hash->{STATE} = 'initialized';
 >>>>>>> 2057217a4... Add new module rateofchange
@@ -210,6 +211,8 @@ rateofchange_Define($$$)
   $hash->{STATE} = 'initialized';
 >>>>>>> 33a843db54d40c26c88835b87d8ad0f3de769302
 >>>>>>> 3c85b5712... Use state reading instead of hash->{STATE} directly
+=======
+>>>>>>> 0485543bb... Fix bad commit of 98_rateofchange
   $hash->{calcIntervals} = 5;
   $hash->{INTERVAL} = $timePeriod/$hash->{calcIntervals}; # Min timePeriod is 5 so min interval is 1 second
   my @readingsBuf = ();
@@ -221,6 +224,7 @@ rateofchange_Define($$$)
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   readingsSingleUpdate($hash, "state", "Initialized", 1);
 =======
   readingsSingleUpdate($hash, "state", 0, 1);
@@ -240,6 +244,9 @@ rateofchange_Define($$$)
   readingsSingleUpdate($hash, "state", 0, 1);
 >>>>>>> 33a843db54d40c26c88835b87d8ad0f3de769302
 >>>>>>> 3c85b5712... Use state reading instead of hash->{STATE} directly
+=======
+  readingsSingleUpdate($hash, "state", "Initialized", 1);
+>>>>>>> 0485543bb... Fix bad commit of 98_rateofchange
   rateofchange_set_state($hash);
   
   # Trigger first calculation cycle
@@ -668,14 +675,18 @@ rateofchange_Attr(@)
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 3c85b5712... Use state reading instead of hash->{STATE} directly
+=======
+>>>>>>> 0485543bb... Fix bad commit of 98_rateofchange
       readingsSingleUpdate ($hash, "state", "disabled", 1);
     }
     else
     {
       readingsBeginUpdate ($hash);
       readingsBulkUpdate  ($hash, "state", "Initialized");
+<<<<<<< HEAD
 =======
 <<<<<<< HEAD
 =======
@@ -720,6 +731,8 @@ rateofchange_Attr(@)
 =======
 >>>>>>> 33a843db54d40c26c88835b87d8ad0f3de769302
 >>>>>>> 3c85b5712... Use state reading instead of hash->{STATE} directly
+=======
+>>>>>>> 0485543bb... Fix bad commit of 98_rateofchange
       readingsBulkUpdate  ($hash, "cmd","wait for next cmd");
       readingsEndUpdate   ($hash, 1);
     }
