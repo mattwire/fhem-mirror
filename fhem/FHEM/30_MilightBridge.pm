@@ -102,8 +102,8 @@ sub MilightBridge_Define($$)
   # Set Attributes
   $attr{$name}{"event-on-change-reading"} = "state" if (!defined($attr{$name}{"event-on-change-reading"}));
   $attr{$name}{"checkInterval"} = 10 if (!defined($attr{$name}{"checkInterval"}));
-  
-  ReadingsSingleUpdate($hash, "state", "Initialized", 1);
+
+  readingsSingleUpdate($hash, "state", "Initialized", 1);
 
   delete $hash->{helper}{RUNNING_PID};
 
@@ -165,11 +165,15 @@ sub MilightBridge_Attr($$$$) {
       return "checkInterval is required in s (default: 10, min: 0)";
     }
 <<<<<<< HEAD
+<<<<<<< HEAD
     readingsSingleUpdate($hash, "state", "Initialized", 1);
     MilightBridge_SetNextTimer($hash);
 =======
     ReadingsSingleUpdate($hash, "state", "Initialized", 1);
 >>>>>>> f7176f71e... Allow ping state check to be disabled, use state reading instead of hash->{STATE} directly
+=======
+    readingsSingleUpdate($hash, "state", "Initialized", 1);
+>>>>>>> ac190219c... Fix type Readings -> readings
   }
   elsif ($attribute eq "protocol")
   {
@@ -192,6 +196,7 @@ sub MilightBridge_Attr($$$$) {
     if ($value eq "1")
     {
 <<<<<<< HEAD
+<<<<<<< HEAD
       readingsSingleUpdate($hash, "state", "disabled", 1);
     }
     else
@@ -204,6 +209,13 @@ sub MilightBridge_Attr($$$$) {
     {
       ReadingsSingleUpdate($hash, "state", "Initialized", 1);
 >>>>>>> f7176f71e... Allow ping state check to be disabled, use state reading instead of hash->{STATE} directly
+=======
+      readingsSingleUpdate($hash, "state", "disabled", 1);
+    }
+    else
+    {
+      readingsSingleUpdate($hash, "state", "Initialized", 1);
+>>>>>>> ac190219c... Fix type Readings -> readings
     }
   }
 
