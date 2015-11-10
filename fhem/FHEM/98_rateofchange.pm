@@ -193,6 +193,7 @@ rateofchange_Define($$$)
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
   $hash->{STATE} = 'initialized';
 >>>>>>> 2057217a4... Add new module rateofchange
@@ -204,6 +205,11 @@ rateofchange_Define($$$)
 =======
   $hash->{STATE} = 'initialized';
 >>>>>>> 4166c18b3... Add new module rateofchange
+=======
+=======
+  $hash->{STATE} = 'initialized';
+>>>>>>> 33a843db54d40c26c88835b87d8ad0f3de769302
+>>>>>>> 3c85b5712... Use state reading instead of hash->{STATE} directly
   $hash->{calcIntervals} = 5;
   $hash->{INTERVAL} = $timePeriod/$hash->{calcIntervals}; # Min timePeriod is 5 so min interval is 1 second
   my @readingsBuf = ();
@@ -214,6 +220,7 @@ rateofchange_Define($$$)
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   readingsSingleUpdate($hash, "state", "Initialized", 1);
 =======
   readingsSingleUpdate($hash, "state", 0, 1);
@@ -227,6 +234,12 @@ rateofchange_Define($$$)
 =======
   readingsSingleUpdate($hash, "state", 0, 1);
 >>>>>>> 4166c18b3... Add new module rateofchange
+=======
+  readingsSingleUpdate($hash, "state", "Initialized", 1);
+=======
+  readingsSingleUpdate($hash, "state", 0, 1);
+>>>>>>> 33a843db54d40c26c88835b87d8ad0f3de769302
+>>>>>>> 3c85b5712... Use state reading instead of hash->{STATE} directly
   rateofchange_set_state($hash);
   
   # Trigger first calculation cycle
@@ -654,6 +667,9 @@ rateofchange_Attr(@)
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 3c85b5712... Use state reading instead of hash->{STATE} directly
       readingsSingleUpdate ($hash, "state", "disabled", 1);
     }
     else
@@ -661,10 +677,13 @@ rateofchange_Attr(@)
       readingsBeginUpdate ($hash);
       readingsBulkUpdate  ($hash, "state", "Initialized");
 =======
+<<<<<<< HEAD
 =======
 >>>>>>> aad97503b... Add new module rateofchange
 =======
 >>>>>>> 4166c18b3... Add new module rateofchange
+=======
+>>>>>>> 3c85b5712... Use state reading instead of hash->{STATE} directly
       $hash->{STATE} = "disabled";
       readingsBeginUpdate ($hash);
       readingsBulkUpdate  ($hash, "state", "disabled");
@@ -694,9 +713,13 @@ rateofchange_Attr(@)
       readingsBeginUpdate ($hash);
       readingsBulkUpdate  ($hash, "state", "initialized");
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> aad97503b... Add new module rateofchange
 =======
 >>>>>>> 4166c18b3... Add new module rateofchange
+=======
+>>>>>>> 33a843db54d40c26c88835b87d8ad0f3de769302
+>>>>>>> 3c85b5712... Use state reading instead of hash->{STATE} directly
       readingsBulkUpdate  ($hash, "cmd","wait for next cmd");
       readingsEndUpdate   ($hash, 1);
     }
