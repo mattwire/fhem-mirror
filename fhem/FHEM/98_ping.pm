@@ -4,10 +4,14 @@
 #     98_ping.pm
 #     FHEM module to check remote network device using ping.
 <<<<<<< HEAD
+<<<<<<< HEAD
 #
 =======
 #     
 >>>>>>> 55a7bb1f9... Add new module ping
+=======
+#     
+>>>>>>> 3201e1d64... Add new module ping
 #     Author: Matthew Wire (mattwire)
 #
 #     This file is part of fhem.
@@ -32,14 +36,20 @@ package main;
 use strict;
 use warnings;
 <<<<<<< HEAD
+<<<<<<< HEAD
 use Blocking;
 =======
+=======
+>>>>>>> 3201e1d64... Add new module ping
 
 #use IO::Handle;
 #use IO::Socket;
 #use IO::Select;
 #use Time::HiRes;
+<<<<<<< HEAD
 >>>>>>> 55a7bb1f9... Add new module ping
+=======
+>>>>>>> 3201e1d64... Add new module ping
 use Net::Ping;
 
 sub ping_Initialize($)
@@ -50,10 +60,14 @@ sub ping_Initialize($)
   $hash->{UndefFn}  = "ping_Undefine";
   $hash->{AttrFn}   = "ping_Attr";
 <<<<<<< HEAD
+<<<<<<< HEAD
   $hash->{AttrList} = "disable:1 checkInterval minFailCount ".$readingFnAttributes;
 =======
   $hash->{AttrList} = "disable:0,1 checkInterval ".$readingFnAttributes;
 >>>>>>> 55a7bb1f9... Add new module ping
+=======
+  $hash->{AttrList} = "disable:0,1 checkInterval ".$readingFnAttributes;
+>>>>>>> 3201e1d64... Add new module ping
 
   return undef;
 }
@@ -64,10 +78,14 @@ sub ping_Define($$)
 {
   my ($hash, $def) = @_;
 <<<<<<< HEAD
+<<<<<<< HEAD
   my @args = split("[ \t][ \t]*", $def);
 =======
   my @args = split("[ \t][ \t]*", $def); 
 >>>>>>> 55a7bb1f9... Add new module ping
+=======
+  my @args = split("[ \t][ \t]*", $def); 
+>>>>>>> 3201e1d64... Add new module ping
 
   return "Usage: define <name> ping <host/ip> <mode> <timeout>"  if(@args < 5);
 
@@ -77,6 +95,7 @@ sub ping_Define($$)
   $hash->{HOST} = $host;
   $hash->{MODE} = lc($mode);
   $hash->{TIMEOUT} = $timeout;
+<<<<<<< HEAD
 <<<<<<< HEAD
   $hash->{FAILCOUNT} = 0;
 
@@ -92,6 +111,8 @@ sub ping_Define($$)
 
   ping_SetNextTimer($hash);
 =======
+=======
+>>>>>>> 3201e1d64... Add new module ping
   
   return "ERROR: mode must be one of tcp,udp,icmp" if ($hash->{MODE} !~ "tcp|udp|icmp");
   return "ERROR: timeout must be 0 or higher." if (($hash->{timeout} !~ /^\d*$/) || ($hash->{timeout} < 0));
@@ -99,7 +120,10 @@ sub ping_Define($$)
   $attr{$name}{"checkInterval"} = 10 if (!defined($attr{$name}{"checkInterval"}));
   
   ping_State($hash);
+<<<<<<< HEAD
 >>>>>>> 55a7bb1f9... Add new module ping
+=======
+>>>>>>> 3201e1d64... Add new module ping
 
   return undef;
 }
@@ -111,10 +135,14 @@ sub ping_Undefine($$)
   my ($hash,$arg) = @_;
   RemoveInternalTimer($hash);
 <<<<<<< HEAD
+<<<<<<< HEAD
   BlockingKill($hash->{helper}{RUNNING_PID}) if(defined($hash->{helper}{RUNNING_PID}));
 =======
   
 >>>>>>> 55a7bb1f9... Add new module ping
+=======
+  
+>>>>>>> 3201e1d64... Add new module ping
   return undef;
 }
 
@@ -123,6 +151,7 @@ sub ping_Undefine($$)
 sub ping_Attr($$$$) {
   my ($command,$name,$attribute,$value) = @_;
   my $hash = $defs{$name};
+<<<<<<< HEAD
 <<<<<<< HEAD
 
   Log3 ($hash, 5, "$hash->{NAME}_Attr: Attr $attribute; Value $value");
@@ -241,6 +270,8 @@ sub ping_DoPingAbort($)
   Log3 $hash->{NAME}, 3, "BlockingCall for ".$hash->{NAME}." was aborted";
   ping_SetNextTimer($hash);
 =======
+=======
+>>>>>>> 3201e1d64... Add new module ping
   
   Log3 ($hash, 5, "$hash->{NAME}_Attr: Attr $attribute; Value $value");
 
@@ -258,11 +289,19 @@ sub ping_DoPingAbort($)
     # Disable on 1, enable on anything else.
     if ($value eq "1")
     {
+<<<<<<< HEAD
       readingsSingleUpdate($hash, "state", "disabled", 1);
     }
     else
     {
       readingsSingleUpdate($hash, "state", "Initialized", 1);
+=======
+      ReadingsSingleUpdate($hash, "state", "disabled", 1);
+    }
+    else
+    {
+      ReadingsSingleUpdate($hash, "state", "Initialized", 1);
+>>>>>>> 3201e1d64... Add new module ping
     }
   }
 
@@ -296,7 +335,10 @@ sub ping_State(@)
   InternalTimer(gettimeofday() + AttrVal($hash->{NAME}, "checkInterval", "10"), "ping_State", $hash, 0);
   
   return undef;
+<<<<<<< HEAD
 >>>>>>> 55a7bb1f9... Add new module ping
+=======
+>>>>>>> 3201e1d64... Add new module ping
 }
 
 1;
@@ -337,12 +379,15 @@ sub ping_State(@)
          Default: 10s. Time after the bridge connection is re-checked.
     </li>
 <<<<<<< HEAD
+<<<<<<< HEAD
     <li>
       <b>minFailCount</b><br/>
          Default: 1. Number of failures before reporting "unreachable".
     </li>
 =======
 >>>>>>> 55a7bb1f9... Add new module ping
+=======
+>>>>>>> 3201e1d64... Add new module ping
   </ul>
 </ul>
 
