@@ -2216,12 +2216,20 @@ sub MilightDevice_CmdQueue_Add(@)
 sub MilightDevice_CmdQueue_Exec(@)
 {
   my ($hash) = @_; 
+<<<<<<< HEAD
   RemoveInternalTimer($hash);
   #if ($hash->{IODev}->{STATE} ne "ok" && $hash->{IODev}->{STATE} ne "Initialized") {
   #  InternalTimer(gettimeofday() + 60, "MilightDevice_CmdQueue_Exec", $hash, 0);
   #  return undef;    
   #}
   
+=======
+
+  if ($hash->{IODev}->{STATE} ne "ok" && $hash->{IODev}->{STATE} ne "Initialized") {
+    InternalTimer(gettimeofday() + 60, "MilightDevice_CmdQueue_Exec", $hash, 0);
+    return undef;    
+  }
+>>>>>>> f992d6d29... Allow Initialized state for bridge
 
   my $actualCmd = @{$hash->{helper}->{cmdQueue}}[0];
 
@@ -2278,6 +2286,15 @@ sub MilightDevice_CmdQueue_Exec(@)
 sub MilightDevice_CmdQueue_Clear(@)
 {
   my ($hash) = @_;
+<<<<<<< HEAD
+=======
+
+  if ($hash->{IODev}->{STATE} ne "ok" && $hash->{IODev}->{STATE} ne "Initialized") {
+    InternalTimer(gettimeofday() + 60, "MilightDevice_CmdQueue_Exec", $hash, 0);
+    return undef;    
+  }
+  
+>>>>>>> f992d6d29... Allow Initialized state for bridge
   Log3 ($hash, 4, "$hash->{NAME}_CmdQueue_Clear");
   RemoveInternalTimer($hash);
   #if ($hash->{IODev}->{STATE} ne "ok" && $hash->{IODev}->{STATE} ne "Initialized") {
