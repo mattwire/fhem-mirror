@@ -290,6 +290,7 @@ sub ping_DoPingAbort($)
     if ($value eq "1")
     {
 <<<<<<< HEAD
+<<<<<<< HEAD
       readingsSingleUpdate($hash, "state", "disabled", 1);
     }
     else
@@ -302,6 +303,13 @@ sub ping_DoPingAbort($)
     {
       ReadingsSingleUpdate($hash, "state", "Initialized", 1);
 >>>>>>> 3201e1d64... Add new module ping
+=======
+      readingsSingleUpdate($hash, "state", "disabled", 1);
+    }
+    else
+    {
+      readingsSingleUpdate($hash, "state", "Initialized", 1);
+>>>>>>> 58bb06683... Fix typos
     }
   }
 
