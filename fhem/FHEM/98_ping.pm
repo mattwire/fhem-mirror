@@ -115,7 +115,7 @@ sub ping_Define($$)
 >>>>>>> 3201e1d64... Add new module ping
   
   return "ERROR: mode must be one of tcp,udp,icmp" if ($hash->{MODE} !~ "tcp|udp|icmp");
-  return "ERROR: timeout must be 0 or higher." if (($hash->{timeout} !~ /^\d*$/) || ($hash->{timeout} < 0));
+  return "ERROR: timeout must be 0 or higher." if (($hash->{TIMEOUT} !~ /^\d*$/) || ($hash->{TIMEOUT} < 0));
   
   $attr{$name}{"checkInterval"} = 10 if (!defined($attr{$name}{"checkInterval"}));
   
