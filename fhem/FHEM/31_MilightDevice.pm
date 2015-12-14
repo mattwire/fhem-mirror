@@ -208,6 +208,7 @@ sub MilightDevice_Define($$)
 
   # IODev
   $attr{$name}{IODev} = $hash->{IODev} if (!defined($attr{$name}{IODev}));
+<<<<<<< HEAD
 
   # restoreAtStart
   if($slot eq 'A') {
@@ -215,6 +216,8 @@ sub MilightDevice_Define($$)
   } else {
     $attr{$name}{"restoreAtStart"} = 1 if (!defined($attr{$name}{"restoreAtStart"}));
   }
+=======
+>>>>>>> 165d386dd... 31_MilightDevice: Refactor MilightDevice_Notify and add MilightDevice_Restore to restore saved state of lamp at startup after init is finished.  Fixes "blue" on startup for some lamps.
   
   return undef;
 }
@@ -741,6 +744,7 @@ sub MilightDevice_Attr(@)
 sub MilightDevice_Notify(@)
 {
   my ($hash,$dev) = @_;
+<<<<<<< HEAD
   return MilightDevice_Restore($hash);
 }
 
@@ -755,6 +759,37 @@ sub MilightDevice_Restore(@)
   if ($init_done)
   {
     return if (AttrVal($hash->{NAME}, "restoreAtStart", 0) == 0);
+=======
+  #my $events = deviceEvents($dev, 1);
+  #my ($hue, $sat, $val);
+  
+  return MilightDevice_Restore($hash);
+  
+  #return if($dev->{NAME} ne "global");
+  #Log3 ($hash, 5, "$hash->{NAME}_Notify: Triggered by $dev->{NAME}");
+  #return if(!grep(m/^INITIALIZED|REREADCFG|DEFINED$/, @{$dev->{CHANGED}}));
+
+  # Restore previous state (as defined in statefile)
+  # wait for global: INITIALIZED after start up
+  #if (@{$events}[0] eq 'INITIALIZED')
+  #{
+  #  MilightDevice_Restore($hash);
+  #}
+  
+  return undef;
+}
+
+#####################################
+# Restore HSV settings from readings.
+# Called after initialization to synchronise lamp state with fhem.
+sub MilightDevice_Restore(@)
+{
+  my ($hash) = @_;
+
+  return if ($hash->{INIT});
+  if ($init_done)
+  {
+>>>>>>> 165d386dd... 31_MilightDevice: Refactor MilightDevice_Notify and add MilightDevice_Restore to restore saved state of lamp at startup after init is finished.  Fixes "blue" on startup for some lamps.
     Log3 ($hash, 4, "$hash->{NAME}_Restore: Restoring saved HSV values");
     $hash->{INIT} = 1;
     # Initialize device
@@ -2217,12 +2252,16 @@ sub MilightDevice_CmdQueue_Exec(@)
 {
   my ($hash) = @_; 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 165d386dd... 31_MilightDevice: Refactor MilightDevice_Notify and add MilightDevice_Restore to restore saved state of lamp at startup after init is finished.  Fixes "blue" on startup for some lamps.
   RemoveInternalTimer($hash);
   #if ($hash->{IODev}->{STATE} ne "ok" && $hash->{IODev}->{STATE} ne "Initialized") {
   #  InternalTimer(gettimeofday() + 60, "MilightDevice_CmdQueue_Exec", $hash, 0);
   #  return undef;    
   #}
   
+<<<<<<< HEAD
 =======
 
   if ($hash->{IODev}->{STATE} ne "ok" && $hash->{IODev}->{STATE} ne "Initialized") {
@@ -2230,6 +2269,8 @@ sub MilightDevice_CmdQueue_Exec(@)
     return undef;    
   }
 >>>>>>> f992d6d29... Allow Initialized state for bridge
+=======
+>>>>>>> 165d386dd... 31_MilightDevice: Refactor MilightDevice_Notify and add MilightDevice_Restore to restore saved state of lamp at startup after init is finished.  Fixes "blue" on startup for some lamps.
 
   my $actualCmd = @{$hash->{helper}->{cmdQueue}}[0];
 
@@ -2287,6 +2328,7 @@ sub MilightDevice_CmdQueue_Clear(@)
 {
   my ($hash) = @_;
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
   if ($hash->{IODev}->{STATE} ne "ok" && $hash->{IODev}->{STATE} ne "Initialized") {
@@ -2295,6 +2337,8 @@ sub MilightDevice_CmdQueue_Clear(@)
   }
   
 >>>>>>> f992d6d29... Allow Initialized state for bridge
+=======
+>>>>>>> 165d386dd... 31_MilightDevice: Refactor MilightDevice_Notify and add MilightDevice_Restore to restore saved state of lamp at startup after init is finished.  Fixes "blue" on startup for some lamps.
   Log3 ($hash, 4, "$hash->{NAME}_CmdQueue_Clear");
   RemoveInternalTimer($hash);
   #if ($hash->{IODev}->{STATE} ne "ok" && $hash->{IODev}->{STATE} ne "Initialized") {
