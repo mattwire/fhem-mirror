@@ -209,6 +209,9 @@ sub MilightDevice_Define($$)
   # IODev
   $attr{$name}{IODev} = $hash->{IODev} if (!defined($attr{$name}{IODev}));
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> e943f55ec... Add restoreAtStart attribute so group devices (slot 'A') do not restore state by default at startup
 
   # restoreAtStart
   if($slot eq 'A') {
@@ -216,8 +219,11 @@ sub MilightDevice_Define($$)
   } else {
     $attr{$name}{"restoreAtStart"} = 1 if (!defined($attr{$name}{"restoreAtStart"}));
   }
+<<<<<<< HEAD
 =======
 >>>>>>> 165d386dd... 31_MilightDevice: Refactor MilightDevice_Notify and add MilightDevice_Restore to restore saved state of lamp at startup after init is finished.  Fixes "blue" on startup for some lamps.
+=======
+>>>>>>> e943f55ec... Add restoreAtStart attribute so group devices (slot 'A') do not restore state by default at startup
   
   return undef;
 }
@@ -745,6 +751,7 @@ sub MilightDevice_Notify(@)
 {
   my ($hash,$dev) = @_;
 <<<<<<< HEAD
+<<<<<<< HEAD
   return MilightDevice_Restore($hash);
 }
 
@@ -763,20 +770,9 @@ sub MilightDevice_Restore(@)
   #my $events = deviceEvents($dev, 1);
   #my ($hue, $sat, $val);
   
+=======
+>>>>>>> e943f55ec... Add restoreAtStart attribute so group devices (slot 'A') do not restore state by default at startup
   return MilightDevice_Restore($hash);
-  
-  #return if($dev->{NAME} ne "global");
-  #Log3 ($hash, 5, "$hash->{NAME}_Notify: Triggered by $dev->{NAME}");
-  #return if(!grep(m/^INITIALIZED|REREADCFG|DEFINED$/, @{$dev->{CHANGED}}));
-
-  # Restore previous state (as defined in statefile)
-  # wait for global: INITIALIZED after start up
-  #if (@{$events}[0] eq 'INITIALIZED')
-  #{
-  #  MilightDevice_Restore($hash);
-  #}
-  
-  return undef;
 }
 
 #####################################
@@ -789,7 +785,11 @@ sub MilightDevice_Restore(@)
   return if ($hash->{INIT});
   if ($init_done)
   {
+<<<<<<< HEAD
 >>>>>>> 165d386dd... 31_MilightDevice: Refactor MilightDevice_Notify and add MilightDevice_Restore to restore saved state of lamp at startup after init is finished.  Fixes "blue" on startup for some lamps.
+=======
+    return if (AttrVal($hash->{NAME}, "restoreAtStart", 0) == 0);
+>>>>>>> e943f55ec... Add restoreAtStart attribute so group devices (slot 'A') do not restore state by default at startup
     Log3 ($hash, 4, "$hash->{NAME}_Restore: Restoring saved HSV values");
     $hash->{INIT} = 1;
     # Initialize device
