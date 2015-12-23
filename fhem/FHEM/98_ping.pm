@@ -331,7 +331,7 @@ sub ping_State(@)
 {
   # Update Bridge state
   my ($hash) = @_;
-  
+
   return undef if (IsDisabled($hash->{NAME}));
   
   Log3 ( $hash, 5, "$hash->{NAME}_State: Executing ping");
@@ -356,6 +356,7 @@ sub ping_State(@)
   }
   
   # Check state every X seconds  
+  RemoveInternalTimer($hash);
   InternalTimer(gettimeofday() + AttrVal($hash->{NAME}, "checkInterval", "10"), "ping_State", $hash, 0);
   
   return undef;
