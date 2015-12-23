@@ -45,7 +45,9 @@ dummy_Set($@)
        ($attr{$name}{disable} || $attr{$name}{disabledForIntervals}) &&
        IsDisabled($name));
 
+  my $cmd = shift @a;
   my @rl = split(" ", AttrVal($name, "readingList", ""));
+<<<<<<< HEAD
   my $doRet;
   eval {
     if(@rl && grep /\b$a[0]\b/, @rl) {
@@ -56,12 +58,21 @@ dummy_Set($@)
   };
   return if($doRet);
   
+=======
+  my @sl = split(" ", AttrVal($name, "setList", ""));
+  if(@rl && grep /\b$cmd\b/, @rl) {
+    readingsSingleUpdate($hash, $cmd, join(" ",@a), 1);
+    return;
+  }
+  elsif(@sl && grep /\b$cmd\b/, @sl) {
+    #my join(" ", @a);
+    Log3 $name, 4, "dummy set $name $cmd";
+  
+    readingsSingleUpdate($hash,"state",$cmd,1);
+  }
+>>>>>>> bc07b689b... Allow SetExtensions
 
-  my $v = join(" ", @a);
-  Log3 $name, 4, "dummy set $name $v";
-
-  readingsSingleUpdate($hash,"state",$v,1);
-  return undef;
+  return SetExtensions($hash, $setList, $name, $cmd, @a);
 }
 
 sub
