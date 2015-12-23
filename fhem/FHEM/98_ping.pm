@@ -61,6 +61,7 @@ sub ping_Initialize($)
   $hash->{AttrFn}   = "ping_Attr";
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   $hash->{AttrList} = "disable:1 checkInterval minFailCount ".$readingFnAttributes;
 =======
   $hash->{AttrList} = "disable:0,1 checkInterval ".$readingFnAttributes;
@@ -68,6 +69,9 @@ sub ping_Initialize($)
 =======
   $hash->{AttrList} = "disable:0,1 checkInterval ".$readingFnAttributes;
 >>>>>>> 3201e1d64... Add new module ping
+=======
+  $hash->{AttrList} = "disable:0,1 checkInterval minFailCount ".$readingFnAttributes;
+>>>>>>> e8fed06f9... Add minFailCount to allow multiple failures before reporting
 
   return undef;
 }
@@ -97,6 +101,7 @@ sub ping_Define($$)
   $hash->{TIMEOUT} = $timeout;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   $hash->{FAILCOUNT} = 0;
 
   delete $hash->{helper}{RUNNING_PID};
@@ -113,11 +118,15 @@ sub ping_Define($$)
 =======
 =======
 >>>>>>> 3201e1d64... Add new module ping
+=======
+  $hash->{FAILCOUNT} = 0;
+>>>>>>> e8fed06f9... Add minFailCount to allow multiple failures before reporting
   
   return "ERROR: mode must be one of tcp,udp,icmp" if ($hash->{MODE} !~ "tcp|udp|icmp");
   return "ERROR: timeout must be 0 or higher." if (($hash->{TIMEOUT} !~ /^\d*$/) || ($hash->{TIMEOUT} < 0));
   
   $attr{$name}{"checkInterval"} = 10 if (!defined($attr{$name}{"checkInterval"}));
+  $attr{$name}{"event-on-change-reading"} = "state" if (!defined($attr{$name}{"event-on-change-reading"}));
   
   ping_State($hash);
 <<<<<<< HEAD
@@ -328,16 +337,23 @@ sub ping_State(@)
   Log3 ( $hash, 5, "$hash->{NAME}_State: Executing ping");
   
   # check via ping
-  my $pingstatus = "unreachable";
   my $p;
   $p = Net::Ping->new($hash->{MODE});
 
   my $alive = $p->ping($hash->{HOST}, $hash->{TIMEOUT});
   $p->close();
-  $pingstatus = "ok" if $alive;
 
-  # And update state
-  readingsSingleUpdate($hash, "state", $pingstatus, 1);
+  if ($alive) {
+    # State is ok
+    $hash->{FAILCOUNT} = 0;
+    readingsSingleUpdate($hash, "state", "ok", 1);
+  } else {
+    # Increment failcount and report unreachable if over limit
+    $hash->{FAILCOUNT} += 1;
+    if ($hash->{FAILCOUNT} >= AttrVal($hash->{NAME}, "minFailCount", 1)) {
+      readingsSingleUpdate($hash, "state", "unreachable", 1);
+    }
+  }
   
   # Check state every X seconds  
   InternalTimer(gettimeofday() + AttrVal($hash->{NAME}, "checkInterval", "10"), "ping_State", $hash, 0);
@@ -388,14 +404,20 @@ sub ping_State(@)
     </li>
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> e8fed06f9... Add minFailCount to allow multiple failures before reporting
     <li>
       <b>minFailCount</b><br/>
          Default: 1. Number of failures before reporting "unreachable".
     </li>
+<<<<<<< HEAD
 =======
 >>>>>>> 55a7bb1f9... Add new module ping
 =======
 >>>>>>> 3201e1d64... Add new module ping
+=======
+>>>>>>> e8fed06f9... Add minFailCount to allow multiple failures before reporting
   </ul>
 </ul>
 
