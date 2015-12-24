@@ -4,7 +4,6 @@ package main;
 
 use strict;
 use warnings;
-use SetExtensions;
 
 sub
 dummy_Initialize($)
@@ -45,8 +44,8 @@ dummy_Set($@)
        ($attr{$name}{disable} || $attr{$name}{disabledForIntervals}) &&
        IsDisabled($name));
 
-  my $cmd = shift @a;
   my @rl = split(" ", AttrVal($name, "readingList", ""));
+<<<<<<< HEAD
 <<<<<<< HEAD
   my $doRet;
   eval {
@@ -71,8 +70,19 @@ dummy_Set($@)
     readingsSingleUpdate($hash,"state",$cmd,1);
   }
 >>>>>>> bc07b689b... Allow SetExtensions
+=======
+  if(@rl && grep /\b$a[0]\b/, @rl) {
+    my $v = shift @a;
+    readingsSingleUpdate($hash, $v, join(" ",@a), 1);
+    return;
+  }
+>>>>>>> a3a362308... Restore dist version
 
-  return SetExtensions($hash, $setList, $name, $cmd, @a);
+  my $v = join(" ", @a);
+  Log3 $name, 4, "dummy set $name $v";
+
+  readingsSingleUpdate($hash,"state",$v,1);
+  return undef;
 }
 
 sub
