@@ -62,6 +62,7 @@ sub ping_Initialize($)
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   $hash->{AttrList} = "disable:1 checkInterval minFailCount ".$readingFnAttributes;
 =======
   $hash->{AttrList} = "disable:0,1 checkInterval ".$readingFnAttributes;
@@ -72,6 +73,9 @@ sub ping_Initialize($)
 =======
   $hash->{AttrList} = "disable:0,1 checkInterval minFailCount ".$readingFnAttributes;
 >>>>>>> e8fed06f9... Add minFailCount to allow multiple failures before reporting
+=======
+  $hash->{AttrList} = "disable:1 checkInterval minFailCount ".$readingFnAttributes;
+>>>>>>> 559325cee... Minor fixes
 
   return undef;
 }
@@ -103,6 +107,7 @@ sub ping_Define($$)
 <<<<<<< HEAD
 <<<<<<< HEAD
   $hash->{FAILCOUNT} = 0;
+<<<<<<< HEAD
 
   delete $hash->{helper}{RUNNING_PID};
 
@@ -121,6 +126,9 @@ sub ping_Define($$)
 =======
   $hash->{FAILCOUNT} = 0;
 >>>>>>> e8fed06f9... Add minFailCount to allow multiple failures before reporting
+=======
+  readingsSingleUpdate($hash, "state", "Initialized", 1);
+>>>>>>> 559325cee... Minor fixes
   
   return "ERROR: mode must be one of tcp,udp,icmp" if ($hash->{MODE} !~ "tcp|udp|icmp");
   return "ERROR: timeout must be 0 or higher." if (($hash->{TIMEOUT} !~ /^\d*$/) || ($hash->{TIMEOUT} < 0));
@@ -284,20 +292,11 @@ sub ping_DoPingAbort($)
   
   Log3 ($hash, 5, "$hash->{NAME}_Attr: Attr $attribute; Value $value");
 
-  if ($attribute eq "checkInterval")
-  {
-    if (($value !~ /^\d*$/) || ($value < 5))
+  if ($command eq "set") {
+
+    if ($attribute eq "checkInterval")
     {
-      $attr{$name}{"checkInterval"} = 10;
-      return "checkInterval is required in s (default: 10, min: 5)";
-    }
-  }
-  # Handle "disable" attribute by opening/closing connection to device
-  elsif ($attribute eq "disable")
-  {
-    # Disable on 1, enable on anything else.
-    if ($value eq "1")
-    {
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
       readingsSingleUpdate($hash, "state", "disabled", 1);
@@ -314,11 +313,31 @@ sub ping_DoPingAbort($)
 >>>>>>> 3201e1d64... Add new module ping
 =======
       readingsSingleUpdate($hash, "state", "disabled", 1);
+=======
+      if (($value !~ /^\d*$/) || ($value < 5))
+      {
+        $attr{$name}{"checkInterval"} = 10;
+        return "checkInterval is required in s (default: 10, min: 5)";
+      }
+>>>>>>> 559325cee... Minor fixes
     }
-    else
+    # Handle "disable" attribute by opening/closing connection to device
+    elsif ($attribute eq "disable")
     {
+<<<<<<< HEAD
       readingsSingleUpdate($hash, "state", "Initialized", 1);
 >>>>>>> 58bb06683... Fix typos
+=======
+      # Disable on 1, enable on anything else.
+      if ($value eq "1")
+      {
+        readingsSingleUpdate($hash, "state", "disabled", 1);
+      }
+      else
+      {
+        readingsSingleUpdate($hash, "state", "Initialized", 1);
+      }
+>>>>>>> 559325cee... Minor fixes
     }
   }
 
