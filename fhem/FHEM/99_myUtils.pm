@@ -117,4 +117,19 @@ sub lounge_tv_audio()
   {fhem("set lounge.tv HDMI")}
 }
 
+sub battery_low($$)
+{
+  my ($event, $lowbatt) = @_;
+  (my $num) = $event =~ /(\d+)/;
+  if (looks_like_number($num)) {
+    if ($num < 20) {
+      fhem("set $lowbatt low");
+    }
+  } else {
+    if ($event =~ m/low/) {
+      fhem("set $lowbatt low");
+    }
+  }
+}
+
 1;
