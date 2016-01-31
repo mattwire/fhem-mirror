@@ -625,7 +625,13 @@ ZWDongle_DoInit($)
   # NODEINFO_LISTENING, Generic Static controller, Specific Static Controller, 0
   ZWDongle_Set($hash, $name, ("setNIF", 1, 2, 1, 0)); # Sec relevant (?)
 
-  readingsSingleUpdate($hash, "state", "Initialized", 1);
+  if (!$hash->{FD} && !IsDummy($name)) {
+    DevIo_setStates($hash, "disconnected");
+  }
+  else {
+    readingsSingleUpdate($hash, "state", "Initialized", 1);
+  }
+
   return undef;
 }
 
