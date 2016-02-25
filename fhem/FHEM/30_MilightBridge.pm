@@ -49,7 +49,11 @@ sub MilightBridge_Initialize($)
   $hash->{NOTIFYDEV} = "global";
   $hash->{NotifyFn} = "MilightBridge_Notify";
   $hash->{AttrFn}   = "MilightBridge_Attr";
+<<<<<<< HEAD
   $hash->{AttrList} = "port protocol:udp,tcp sendInterval disable:0,1 tcpPing:1 checkInterval ".$readingFnAttributes;
+=======
+  $hash->{AttrList} = "port protocol sendInterval disable:0,1 tcpPing:1 checkInterval ".$readingFnAttributes;
+>>>>>>> 360859e78... * Use Blocking.pm for ping checks so it does not block main thread
 
   return undef;
 }
@@ -78,12 +82,21 @@ sub MilightBridge_Define($$)
 
   $attr{$name}{"protocol"} = "udp" if (!defined($attr{$name}{"protocol"}));
 
+<<<<<<< HEAD
+=======
+  $attr{$name}{"protocol"} = "udp" if (!defined($attr{$name}{"protocol"}));
+
+>>>>>>> 360859e78... * Use Blocking.pm for ping checks so it does not block main thread
   # Create local socket
   my $sock = IO::Socket::INET-> new (
       PeerPort => 48899,
       Blocking => 0,
+<<<<<<< HEAD
       Proto => $attr{$name}{"protocol"},
       Broadcast => 1) or return "can't bind: $@";
+=======
+      Proto => $attr{$name}{"protocol"}) or return "can't bind: $@";
+>>>>>>> 360859e78... * Use Blocking.pm for ping checks so it does not block main thread
   my $select = IO::Select->new($sock);
   $hash->{SOCKET} = $sock;
   $hash->{SELECT} = $select;
@@ -103,6 +116,8 @@ sub MilightBridge_Define($$)
   $attr{$name}{"event-on-change-reading"} = "state" if (!defined($attr{$name}{"event-on-change-reading"}));
   $attr{$name}{"checkInterval"} = 10 if (!defined($attr{$name}{"checkInterval"}));
 
+  delete $hash->{helper}{RUNNING_PID};
+
   readingsSingleUpdate($hash, "state", "Initialized", 1);
 
   readingsSingleUpdate($hash, "state", "Initialized", 1);
@@ -115,6 +130,7 @@ sub MilightBridge_Define($$)
   $hash->{SENDFAIL} = 0;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
   # Get initial bridge state
   MilightBridge_SetNextTimer($hash);
@@ -125,6 +141,11 @@ sub MilightBridge_Define($$)
   # Get initial bridge state
   MilightBridge_State($hash);
 >>>>>>> f7176f71e... Allow ping state check to be disabled, use state reading instead of hash->{STATE} directly
+=======
+
+  # Get initial bridge state
+  MilightBridge_SetNextTimer($hash);
+>>>>>>> 360859e78... * Use Blocking.pm for ping checks so it does not block main thread
 
   return undef;
 }
@@ -180,6 +201,7 @@ sub MilightBridge_Attr($$$$) {
 >>>>>>> f7176f71e... Allow ping state check to be disabled, use state reading instead of hash->{STATE} directly
 =======
     readingsSingleUpdate($hash, "state", "Initialized", 1);
+<<<<<<< HEAD
 >>>>>>> ac190219c... Fix type Readings -> readings
 =======
     ReadingsSingleUpdate($hash, "state", "Initialized", 1);
@@ -187,6 +209,9 @@ sub MilightBridge_Attr($$$$) {
 =======
     readingsSingleUpdate($hash, "state", "Initialized", 1);
 >>>>>>> a4706da79... Fix type Readings -> readings
+=======
+    MilightBridge_SetNextTimer($hash);
+>>>>>>> 360859e78... * Use Blocking.pm for ping checks so it does not block main thread
   }
   elsif ($attribute eq "protocol")
   {
@@ -198,9 +223,27 @@ sub MilightBridge_Attr($$$$) {
     }
     else
     {
+<<<<<<< HEAD
       return "protocol must be one of 'tcp|udp'";
     }
   }
+=======
+      $hash->{PORT} = $attr{$name}{"port"};
+    }
+  }
+  elsif ($attribute eq "protocol")
+  {
+    if (($value eq "tcp" || $value eq "udp"))
+    {
+      $attr{$name}{"protocol"} = $value;
+      return "You need to restart fhem or modify to enable new protocol.";
+    }
+    else
+    {
+      return "protocol must be one of 'tcp|udp'";
+    }
+  }
+>>>>>>> 360859e78... * Use Blocking.pm for ping checks so it does not block main thread
 
   # Handle "disable" attribute by opening/closing connection to device
   elsif ($attribute eq "disable")
@@ -256,6 +299,12 @@ sub MilightBridge_Attr($$$$) {
 sub MilightBridge_Notify($$)
 {
   my ($hash,$dev) = @_;
+<<<<<<< HEAD
+=======
+  Log3 ($hash, 5, "$hash->{NAME}_Notify: Triggered by $dev->{NAME}; @{$dev->{CHANGED}}");
+
+  return if($dev->{NAME} ne "global");
+>>>>>>> 360859e78... * Use Blocking.pm for ping checks so it does not block main thread
 
   if(grep(m/^(INITIALIZED|REREADCFG|DEFINED.*|MODIFIED.*|DELETED.*)$/, @{$dev->{CHANGED}}))
   {
@@ -270,6 +319,7 @@ sub MilightBridge_Notify($$)
 sub MilightBridge_SetNextTimer($)
 {
   my ($hash) = @_;
+<<<<<<< HEAD
 <<<<<<< HEAD
   # Check state every X seconds
   RemoveInternalTimer($hash);
@@ -288,14 +338,51 @@ sub MilightBridge_SetNextTimer($)
   {
     Log3 ( $hash, 5, "$hash->{NAME}_State: Bridge status disabled");
     return undef;
+=======
+  # Check state every X seconds
+  RemoveInternalTimer($hash);
+  InternalTimer(gettimeofday() + AttrVal($hash->{NAME}, "checkInterval", "10"), "MilightBridge_DoPingStart", $hash, 0);
+}
+
+#####################################
+# Prepare and start the blocking call in new thread
+sub MilightBridge_DoPingStart($)
+{
+  my ($hash) = @_;
+
+  return undef if (IsDisabled($hash->{NAME}));
+
+  my $timeout = 2;
+  my $mode = 'udp';
+  $mode = 'tcp' if(defined($attr{$hash->{NAME}}{tcpPing}));
+
+  my $arg = $hash->{NAME}."|".$hash->{HOST}."|".$mode."|".$timeout;
+  my $blockingFn = "MilightBridge_DoPing";
+  my $finishFn = "MilightBridge_DoPingDone";
+  my $abortFn = "MilightBridge_DoPingAbort";
+
+  if (!(exists($hash->{helper}{RUNNING_PID}))) {
+    $hash->{helper}{RUNNING_PID} =
+          BlockingCall($blockingFn, $arg, $finishFn, $timeout, $abortFn, $hash);
+  } else {
+    Log3 $hash, 3, "$hash->{NAME} Blocking Call running no new started";
+    MilightBridge_SetNextTimer($hash);
+>>>>>>> 360859e78... * Use Blocking.pm for ping checks so it does not block main thread
   }
-  
-  Log3 ( $hash, 5, "$hash->{NAME}_State: Checking Bridge Status");
-  
-  # Do a ping check to see if bridge is reachable
+}
+
+#####################################
+# BlockingCall DoPing in separate thread
+sub MilightBridge_DoPing(@)
+{
+  my ($string) = @_;
+  my ($name, $host, $mode, $timeout) = split("\\|", $string);
+
+  Log3 ($name, 5, $name."_DoPing: Executing ping");
+
   # check via ping
-  my $pingstatus = "unreachable";
   my $p;
+<<<<<<< HEAD
   if(defined($attr{$hash->{NAME}}{tcpPing}))
   {
     $p = Net::Ping->new('tcp');
@@ -343,6 +430,26 @@ sub MilightBridge_DoPing(@)
   $p = Net::Ping->new($mode);
   my $result = $p->ping($host, $timeout);
   $p->close();
+=======
+  $p = Net::Ping->new($mode);
+
+  my $result = $p->ping($host, $timeout);
+  $p->close();
+
+  return "$name|$result";
+}
+
+#####################################
+# Ping thread completed
+sub MilightBridge_DoPingDone($)
+{
+  my ($string) = @_;
+  my ($name, $result) = split("\\|", $string);
+  my $hash = $defs{$name};
+
+  my $status = "ok";
+  $status = "unreachable" if !($result);
+>>>>>>> 360859e78... * Use Blocking.pm for ping checks so it does not block main thread
 
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -354,7 +461,7 @@ sub MilightBridge_DoPing(@)
 >>>>>>> 4eafd0686... Allow ping state check to be disabled, use state reading instead of hash->{STATE} directly
   # Update readings
   readingsBeginUpdate($hash);
-  readingsBulkUpdate($hash, "state", $pingstatus);
+  readingsBulkUpdate($hash, "state", $status);
   readingsBulkUpdate( $hash, "sendFail", $hash->{SENDFAIL});
   readingsEndUpdate($hash, 1);
 <<<<<<< HEAD
@@ -362,6 +469,7 @@ sub MilightBridge_DoPing(@)
 =======
 >>>>>>> 4eafd0686... Allow ping state check to be disabled, use state reading instead of hash->{STATE} directly
 
+<<<<<<< HEAD
 #####################################
 # Ping thread completed
 sub MilightBridge_DoPingDone($)
@@ -379,6 +487,8 @@ sub MilightBridge_DoPingDone($)
   readingsBulkUpdate( $hash, "sendFail", $hash->{SENDFAIL});
   readingsEndUpdate($hash, 1);
 
+=======
+>>>>>>> 360859e78... * Use Blocking.pm for ping checks so it does not block main thread
   delete($hash->{helper}{RUNNING_PID});
   MilightBridge_SetNextTimer($hash);
 }
@@ -576,6 +686,10 @@ sub MilightBridge_CmdQueue_Send(@)
       <b>checkInterval</b><br/>
          Default: 10s. Time after the bridge connection is re-checked.<br>
          If this is set to 0 checking is disabled and state = "Initialized".
+    </li>
+    <li>
+      <b>protocol</b><br/>
+         Default: udp. Change to tcp if you have enabled tcp mode on your bridge.
     </li>
     <li>
       <b>protocol</b><br/>

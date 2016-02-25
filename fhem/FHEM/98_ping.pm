@@ -5,6 +5,7 @@
 #     FHEM module to check remote network device using ping.
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 #
 =======
 #     
@@ -12,6 +13,9 @@
 =======
 #     
 >>>>>>> 3201e1d64... Add new module ping
+=======
+#
+>>>>>>> 360859e78... * Use Blocking.pm for ping checks so it does not block main thread
 #     Author: Matthew Wire (mattwire)
 #
 #     This file is part of fhem.
@@ -37,6 +41,7 @@ use strict;
 use warnings;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 use Blocking;
 =======
 =======
@@ -50,6 +55,9 @@ use Blocking;
 >>>>>>> 55a7bb1f9... Add new module ping
 =======
 >>>>>>> 3201e1d64... Add new module ping
+=======
+use Blocking;
+>>>>>>> 360859e78... * Use Blocking.pm for ping checks so it does not block main thread
 use Net::Ping;
 
 sub ping_Initialize($)
@@ -87,6 +95,7 @@ sub ping_Define($$)
   my ($hash, $def) = @_;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   my @args = split("[ \t][ \t]*", $def);
 =======
   my @args = split("[ \t][ \t]*", $def); 
@@ -94,6 +103,9 @@ sub ping_Define($$)
 =======
   my @args = split("[ \t][ \t]*", $def); 
 >>>>>>> 3201e1d64... Add new module ping
+=======
+  my @args = split("[ \t][ \t]*", $def);
+>>>>>>> 360859e78... * Use Blocking.pm for ping checks so it does not block main thread
 
   return "Usage: define <name> ping <host/ip> <mode> <timeout>"  if(@args < 5);
 
@@ -108,11 +120,15 @@ sub ping_Define($$)
 <<<<<<< HEAD
   $hash->{FAILCOUNT} = 0;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 360859e78... * Use Blocking.pm for ping checks so it does not block main thread
 
   delete $hash->{helper}{RUNNING_PID};
 
   readingsSingleUpdate($hash, "state", "Initialized", 1);
 
+<<<<<<< HEAD
   return "ERROR: mode must be one of tcp,udp,icmp" if ($hash->{MODE} !~ "tcp|udp|icmp");
   return "ERROR: timeout must be 0 or higher." if (($hash->{TIMEOUT} !~ /^\d*$/) || ($hash->{TIMEOUT} < 0));
 
@@ -130,17 +146,24 @@ sub ping_Define($$)
   readingsSingleUpdate($hash, "state", "Initialized", 1);
 >>>>>>> 559325cee... Minor fixes
   
+=======
+>>>>>>> 360859e78... * Use Blocking.pm for ping checks so it does not block main thread
   return "ERROR: mode must be one of tcp,udp,icmp" if ($hash->{MODE} !~ "tcp|udp|icmp");
   return "ERROR: timeout must be 0 or higher." if (($hash->{TIMEOUT} !~ /^\d*$/) || ($hash->{TIMEOUT} < 0));
-  
+
   $attr{$name}{"checkInterval"} = 10 if (!defined($attr{$name}{"checkInterval"}));
   $attr{$name}{"event-on-change-reading"} = "state" if (!defined($attr{$name}{"event-on-change-reading"}));
+<<<<<<< HEAD
   
   ping_State($hash);
 <<<<<<< HEAD
 >>>>>>> 55a7bb1f9... Add new module ping
 =======
 >>>>>>> 3201e1d64... Add new module ping
+=======
+
+  ping_SetNextTimer($hash);
+>>>>>>> 360859e78... * Use Blocking.pm for ping checks so it does not block main thread
 
   return undef;
 }
@@ -153,6 +176,7 @@ sub ping_Undefine($$)
   RemoveInternalTimer($hash);
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   BlockingKill($hash->{helper}{RUNNING_PID}) if(defined($hash->{helper}{RUNNING_PID}));
 =======
   
@@ -160,6 +184,9 @@ sub ping_Undefine($$)
 =======
   
 >>>>>>> 3201e1d64... Add new module ping
+=======
+  BlockingKill($hash->{helper}{RUNNING_PID}) if(defined($hash->{helper}{RUNNING_PID}));
+>>>>>>> 360859e78... * Use Blocking.pm for ping checks so it does not block main thread
   return undef;
 }
 
@@ -168,6 +195,7 @@ sub ping_Undefine($$)
 sub ping_Attr($$$$) {
   my ($command,$name,$attribute,$value) = @_;
   my $hash = $defs{$name};
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 
@@ -290,6 +318,9 @@ sub ping_DoPingAbort($)
 =======
 >>>>>>> 3201e1d64... Add new module ping
   
+=======
+
+>>>>>>> 360859e78... * Use Blocking.pm for ping checks so it does not block main thread
   Log3 ($hash, 5, "$hash->{NAME}_Attr: Attr $attribute; Value $value");
 
   if ($command eq "set") {
@@ -341,28 +372,70 @@ sub ping_DoPingAbort($)
     }
   }
 
-  return undef;  
+  return undef;
 }
 
 #####################################
-# Perform a ping and set state to result
-sub ping_State(@)
+# Set next timer for ping check
+sub ping_SetNextTimer($)
 {
-  # Update Bridge state
+  my ($hash) = @_;
+  # Check state every X seconds
+  RemoveInternalTimer($hash);
+  InternalTimer(gettimeofday() + AttrVal($hash->{NAME}, "checkInterval", "10"), "ping_Start", $hash, 0);
+}
+
+#####################################
+# Prepare and start the blocking call in new thread
+sub ping_Start($)
+{
   my ($hash) = @_;
 
   return undef if (IsDisabled($hash->{NAME}));
-  
-  Log3 ( $hash, 5, "$hash->{NAME}_State: Executing ping");
-  
+
+  my $timeout = $hash->{TIMEOUT};
+  my $arg = $hash->{NAME}."|".$hash->{HOST}."|".$hash->{MODE}."|".$hash->{TIMEOUT};
+  my $blockingFn = "ping_DoPing";
+  my $finishFn = "ping_DoPingDone";
+  my $abortFn = "ping_DoPingAbort";
+
+  if (!(exists($hash->{helper}{RUNNING_PID}))) {
+    $hash->{helper}{RUNNING_PID} =
+          BlockingCall($blockingFn, $arg, $finishFn, $timeout, $abortFn, $hash);
+  } else {
+    Log3 $hash, 3, "$hash->{NAME} Blocking Call running no new started";
+    ping_SetNextTimer($hash);
+  }
+}
+
+#####################################
+# BlockingCall DoPing in separate thread
+sub ping_DoPing(@)
+{
+  my ($string) = @_;
+  my ($name, $host, $mode, $timeout) = split("\\|", $string);
+
+  Log3 ($name, 5, $name."_DoPing: Executing ping");
+
   # check via ping
   my $p;
-  $p = Net::Ping->new($hash->{MODE});
+  $p = Net::Ping->new($mode);
 
-  my $alive = $p->ping($hash->{HOST}, $hash->{TIMEOUT});
+  my $result = $p->ping($host, $timeout);
   $p->close();
 
-  if ($alive) {
+  return "$name|$result";
+}
+
+#####################################
+# Ping thread completed
+sub ping_DoPingDone($)
+{
+  my ($string) = @_;
+  my ($name, $result) = split("\\|", $string);
+  my $hash = $defs{$name};
+
+  if ($result) {
     # State is ok
     $hash->{FAILCOUNT} = 0;
     readingsSingleUpdate($hash, "state", "ok", 1);
@@ -373,6 +446,7 @@ sub ping_State(@)
       readingsSingleUpdate($hash, "state", "unreachable", 1);
     }
   }
+<<<<<<< HEAD
   
   # Check state every X seconds  
   RemoveInternalTimer($hash);
@@ -383,6 +457,21 @@ sub ping_State(@)
 >>>>>>> 55a7bb1f9... Add new module ping
 =======
 >>>>>>> 3201e1d64... Add new module ping
+=======
+
+  delete($hash->{helper}{RUNNING_PID});
+  ping_SetNextTimer($hash);
+}
+
+#####################################
+# Ping thread timeout
+sub ping_DoPingAbort($)
+{
+  my ($hash) = @_;
+  delete($hash->{helper}{RUNNING_PID});
+  Log3 $hash->{NAME}, 3, "BlockingCall for ".$hash->{NAME}." was aborted";
+  ping_SetNextTimer($hash);
+>>>>>>> 360859e78... * Use Blocking.pm for ping checks so it does not block main thread
 }
 
 1;
