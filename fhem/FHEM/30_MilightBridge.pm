@@ -428,14 +428,18 @@ sub MilightBridge_DoPing(@)
   # check via ping
   my $p;
   $p = Net::Ping->new($mode);
+<<<<<<< HEAD
   my $result = $p->ping($host, $timeout);
   $p->close();
 =======
   $p = Net::Ping->new($mode);
 
+=======
+>>>>>>> 5989ab71f... Fix uninitialised variable
   my $result = $p->ping($host, $timeout);
   $p->close();
 
+  $result="" if !(defined($result));
   return "$name|$result";
 }
 
