@@ -49,10 +49,14 @@ sub MilightBridge_Initialize($)
   $hash->{NotifyFn} = "MilightBridge_Notify";
   $hash->{AttrFn}   = "MilightBridge_Attr";
 <<<<<<< HEAD
+<<<<<<< HEAD
   $hash->{AttrList} = "port protocol:udp,tcp sendInterval disable:0,1 tcpPing:1 checkInterval ".$readingFnAttributes;
 =======
   $hash->{AttrList} = "port protocol sendInterval disable:0,1 tcpPing:1 checkInterval ".$readingFnAttributes;
 >>>>>>> 360859e78... * Use Blocking.pm for ping checks so it does not block main thread
+=======
+  $hash->{AttrList} = "port protocol:udp,tcp sendInterval disable:0,1 tcpPing:1 checkInterval ".$readingFnAttributes;
+>>>>>>> c25498bf6... Mqtt: Remove notify function
 
   return undef;
 }
@@ -206,7 +210,7 @@ sub MilightBridge_Attr($$$$) {
     {
       $attr{$name}{"sendInterval"} = 100;
       $hash->{INTERVAL} = $attr{$name}{"sendInterval"};
-      return "sendInterval is required in ms (default: 100)";
+      return "MilightBridge: sendInterval is required in ms (default: 100)";
     }
     else
     {
@@ -218,7 +222,7 @@ sub MilightBridge_Attr($$$$) {
     if (($value !~ /^\d*$/) || ($value < 0))
     {
       $attr{$name}{"checkInterval"} = 10;
-      return "checkInterval is required in s (default: 10, min: 0)";
+      return "MilightBridge: checkInterval is required in seconds (default: 10, min: 0)";
     }
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -247,9 +251,15 @@ sub MilightBridge_Attr($$$$) {
   {
     if (($value eq "tcp" || $value eq "udp"))
     {
+<<<<<<< HEAD
       my $protocolchanged = (defined($attr{$name}{"protocol"}) && $attr{$name}{"protocol"} ne $value);
       $attr{$name}{"protocol"} = $value;
       return "You need to restart fhem or modify to enable new protocol." if($protocolchanged);
+=======
+      $attr{$name}{"port"} = 100;
+      $hash->{PORT} = $attr{$name}{"port"};
+      return "MilightBridge: port is required as numeric (default: 8899)";
+>>>>>>> c25498bf6... Mqtt: Remove notify function
     }
     else
     {
@@ -265,12 +275,13 @@ sub MilightBridge_Attr($$$$) {
   {
     if (($value eq "tcp" || $value eq "udp"))
     {
+      my $protocolchanged = (defined($attr{$name}{"protocol"}) && $attr{$name}{"protocol"} ne $value);
       $attr{$name}{"protocol"} = $value;
-      return "You need to restart fhem or modify to enable new protocol.";
+      return "MilightBridge: Restart fhem or modify to enable new protocol." if($protocolchanged);
     }
     else
     {
-      return "protocol must be one of 'tcp|udp'";
+      return "MilightBridge: protocol must be one of 'tcp|udp'";
     }
   }
 >>>>>>> 360859e78... * Use Blocking.pm for ping checks so it does not block main thread
