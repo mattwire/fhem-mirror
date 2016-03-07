@@ -31,6 +31,7 @@ use Blocking;
 
 use IO::Handle;
 use IO::Socket;
+use IO::Select;
 use Time::HiRes;
 use Net::Ping;
 
@@ -90,23 +91,33 @@ sub MilightBridge_Define($$)
 =======
   $attr{$name}{"protocol"} = "udp" if (!defined($attr{$name}{"protocol"}));
 
+<<<<<<< HEAD
 >>>>>>> 360859e78... * Use Blocking.pm for ping checks so it does not block main thread
+=======
+>>>>>>> 7e9277f80... Revert socket changes
   # Create local socket
   my $sock = IO::Socket::INET-> new (
       PeerPort => 48899,
       Blocking => 0,
+<<<<<<< HEAD
 <<<<<<< HEAD
       Proto => $attr{$name}{"protocol"},
       Broadcast => 1) or return "can't bind: $@";
 =======
       Proto => $attr{$name}{"protocol"}) or return "can't bind: $@";
 >>>>>>> 360859e78... * Use Blocking.pm for ping checks so it does not block main thread
+=======
+      Proto => $attr{$name}{"protocol"}) or return "can't bind: $@";
+>>>>>>> 7e9277f80... Revert socket changes
   my $select = IO::Select->new($sock);
   $hash->{SOCKET} = $sock;
   $hash->{SELECT} = $select;
 
+<<<<<<< HEAD
 =======
 >>>>>>> 2124d5ddc... Change socket logic
+=======
+>>>>>>> 7e9277f80... Revert socket changes
   # Note: Milight API specifies 100ms bridge delay for sending commands
   # Define sendInterval
   $attr{$name}{"sendInterval"} = 100 if (!defined($attr{$name}{"sendInterval"}));
@@ -139,6 +150,7 @@ sub MilightBridge_Define($$)
 <<<<<<< HEAD
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   # Get initial bridge state
   MilightBridge_SetNextTimer($hash);
 =======
@@ -161,6 +173,10 @@ sub MilightBridge_Define($$)
     return MilightBridge_SetNextTimer($hash);
   }
 >>>>>>> 2124d5ddc... Change socket logic
+=======
+  # Get initial bridge state
+  MilightBridge_SetNextTimer($hash);
+>>>>>>> 7e9277f80... Revert socket changes
 
   return undef;
 }
@@ -172,26 +188,7 @@ sub MilightBridge_Undefine($$)
   my ($hash,$arg) = @_;
   RemoveInternalTimer($hash);
   BlockingKill($hash->{helper}{RUNNING_PID}) if(defined($hash->{helper}{RUNNING_PID}));
-  MilightBridge_Disconnect($hash);
   return undef;
-}
-
-sub MilightBridge_Connect($) {
-  my ($hash) = @_;
-  my $name = $hash->{NAME};
-  # Create local socket
-  my $sock = IO::Socket::INET-> new (
-      PeerAddr => $hash->{HOST},
-      PeerPort => $hash->{PORT},
-      Blocking => 0,
-      Proto => $attr{$name}{"protocol"}) or return "can't bind: $@";
-  $hash->{SOCKET} = $sock;
-}
-
-sub MilightBridge_Disconnect($) {
-  my ($hash) = @_;
-  close($hash->{SOCKET});
-  delete($hash->{SOCKET});
 }
 
 #####################################
@@ -210,7 +207,7 @@ sub MilightBridge_Attr($$$$) {
     {
       $attr{$name}{"sendInterval"} = 100;
       $hash->{INTERVAL} = $attr{$name}{"sendInterval"};
-      return "MilightBridge: sendInterval is required in ms (default: 100)";
+      return "sendInterval is required in ms (default: 100)";
     }
     else
     {
@@ -222,7 +219,7 @@ sub MilightBridge_Attr($$$$) {
     if (($value !~ /^\d*$/) || ($value < 0))
     {
       $attr{$name}{"checkInterval"} = 10;
-      return "MilightBridge: checkInterval is required in seconds (default: 10, min: 0)";
+      return "checkInterval is required in s (default: 10, min: 0)";
     }
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -258,8 +255,12 @@ sub MilightBridge_Attr($$$$) {
 =======
       $attr{$name}{"port"} = 100;
       $hash->{PORT} = $attr{$name}{"port"};
+<<<<<<< HEAD
       return "MilightBridge: port is required as numeric (default: 8899)";
 >>>>>>> c25498bf6... Mqtt: Remove notify function
+=======
+      return "port is required as numeric (default: 8899)";
+>>>>>>> 7e9277f80... Revert socket changes
     }
     else
     {
@@ -277,11 +278,11 @@ sub MilightBridge_Attr($$$$) {
     {
       my $protocolchanged = (defined($attr{$name}{"protocol"}) && $attr{$name}{"protocol"} ne $value);
       $attr{$name}{"protocol"} = $value;
-      return "MilightBridge: Restart fhem or modify to enable new protocol." if($protocolchanged);
+      return "You need to restart fhem or modify to enable new protocol." if($protocolchanged);
     }
     else
     {
-      return "MilightBridge: protocol must be one of 'tcp|udp'";
+      return "protocol must be one of 'tcp|udp'";
     }
   }
 >>>>>>> 360859e78... * Use Blocking.pm for ping checks so it does not block main thread
@@ -363,6 +364,7 @@ sub MilightBridge_SetNextTimer($)
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   # Check state every X seconds
   RemoveInternalTimer($hash);
   my $interval=AttrVal($hash->{NAME}, "checkInterval", "10");
@@ -385,6 +387,8 @@ sub MilightBridge_SetNextTimer($)
 
   MilightBridge_Connect($hash) if (!defined($hash->{SOCKET}));
 >>>>>>> 2124d5ddc... Change socket logic
+=======
+>>>>>>> 7e9277f80... Revert socket changes
   # Check state every X seconds
   RemoveInternalTimer($hash);
   InternalTimer(gettimeofday() + AttrVal($hash->{NAME}, "checkInterval", "10"), "MilightBridge_DoPingStart", $hash, 0);
@@ -631,13 +635,19 @@ sub MilightBridge_CmdQueue_Send(@)
       # Check bridge is not disabled, and send command
       if (!IsDisabled($hash->{NAME}))
       {
-        if (!send($hash->{SOCKET}, $command, 0))
+        my $hostip = inet_aton($hash->{HOST});
+        if (!defined($hostip) || $hostip eq '')
         {
-          MilightBridge_Disconnect($hash);
+          Log3 ($hash, 3, "$hash->{NAME}: Could not resolve hostname " . $hash->{HOST});
+          return undef;
+        }
+        # sockaddr_in crashes if ip address is undef
+        my $portaddr = sockaddr_in($hash->{PORT}, $hostip);
+        if (!send($hash->{SOCKET}, $command, 0, $portaddr))
+        {
           # Send failed
           Log3 ($hash, 3, "$hash->{NAME} Send FAILED! ".gettimeofday().":$hexStr. Queue Length: ".@{$hash->{cmdQueue}});
           $hash->{SENDFAIL} = 1;
-          MilightBridge_Connect($hash);
         }
         else
         {
