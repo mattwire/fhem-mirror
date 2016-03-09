@@ -342,11 +342,14 @@ sub MilightBridge_Notify($$)
 {
   my ($hash,$dev) = @_;
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
   Log3 ($hash, 5, "$hash->{NAME}_Notify: Triggered by $dev->{NAME}; @{$dev->{CHANGED}}");
 
   return if($dev->{NAME} ne "global");
 >>>>>>> 360859e78... * Use Blocking.pm for ping checks so it does not block main thread
+=======
+>>>>>>> f9da6ef7f... Set NOTIFYDEV
 
   if(grep(m/^(INITIALIZED|REREADCFG|DEFINED.*|MODIFIED.*|DELETED.*)$/, @{$dev->{CHANGED}}))
   {
