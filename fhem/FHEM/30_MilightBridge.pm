@@ -394,7 +394,10 @@ sub MilightBridge_SetNextTimer($)
 >>>>>>> 7e9277f80... Revert socket changes
   # Check state every X seconds
   RemoveInternalTimer($hash);
-  InternalTimer(gettimeofday() + AttrVal($hash->{NAME}, "checkInterval", "10"), "MilightBridge_DoPingStart", $hash, 0);
+  my $interval=AttrVal($hash->{NAME}, "checkInterval", "10");
+  if ($interval > 0) {
+    InternalTimer(gettimeofday() + $interval, "MilightBridge_DoPingStart", $hash, 0);
+  }
 }
 
 #####################################
