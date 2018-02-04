@@ -415,14 +415,7 @@ sub MilightBridge_CmdQueue_Send(@)
     #Log3 ($hash, 5, "$hash->{NAME}_cmdQueue_Send: cmdLastSent: $hash->{cmdLastSent}; Next: ".(gettimeofday()+($hash->{INTERVAL}/1000)));
 
     # Remove any existing timers and trigger a new one
-    foreach my $args (keys %intAt)
-    {
-      if (($intAt{$args}{ARG} eq $hash) && ($intAt{$args}{FN} eq 'MilightBridge_CmdQueue_Send'))
-      {
-        Log3 ($hash, 5, "$hash->{NAME}_CmdQueue_Send: Remove timer at: ".$intAt{$args}{TRIGGERTIME});
-        delete($intAt{$args});
-      }
-    }
+    RemoveInternalTimer($hash, 'MilightBridge_CmdQueue_Send');
     InternalTimer(gettimeofday()+($hash->{INTERVAL}/1000), "MilightBridge_CmdQueue_Send", $hash, 0);
   }
 
