@@ -1,4 +1,4 @@
-# $Id: 30_MilightBridge.pm 11710 2016-06-24 09:07:17Z mattwire $
+# $Id: 30_MilightBridge.pm 16085 2018-02-04 18:35:23Z mattwire $
 ##############################################
 #
 #     30_MilightBridge.pm (Use with 31_MilightDevice.pm)
@@ -426,6 +426,8 @@ sub MilightBridge_CmdQueue_Send(@)
 1;
 
 =pod
+=item device
+=item summary Interface to a Milight Bridge connected to the network using a Wifi connection
 =begin html
 
 <a name="MilightBridge"></a>
