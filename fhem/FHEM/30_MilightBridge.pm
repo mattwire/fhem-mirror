@@ -1,4 +1,4 @@
-# $Id$
+# $Id: 30_MilightBridge.pm 11710 2016-06-24 09:07:17Z mattwire $
 ##############################################
 #
 #     30_MilightBridge.pm (Use with 31_MilightDevice.pm)
@@ -49,15 +49,7 @@ sub MilightBridge_Initialize($)
   $hash->{NOTIFYDEV} = "global";
   $hash->{NotifyFn} = "MilightBridge_Notify";
   $hash->{AttrFn}   = "MilightBridge_Attr";
-<<<<<<< HEAD
-<<<<<<< HEAD
   $hash->{AttrList} = "port protocol:udp,tcp sendInterval disable:0,1 tcpPing:1 checkInterval ".$readingFnAttributes;
-=======
-  $hash->{AttrList} = "port protocol sendInterval disable:0,1 tcpPing:1 checkInterval ".$readingFnAttributes;
->>>>>>> 360859e78... * Use Blocking.pm for ping checks so it does not block main thread
-=======
-  $hash->{AttrList} = "port protocol:udp,tcp sendInterval disable:0,1 tcpPing:1 checkInterval ".$readingFnAttributes;
->>>>>>> c25498bf6... Mqtt: Remove notify function
 
   return undef;
 }
@@ -86,38 +78,16 @@ sub MilightBridge_Define($$)
 
   $attr{$name}{"protocol"} = "udp" if (!defined($attr{$name}{"protocol"}));
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-  $attr{$name}{"protocol"} = "udp" if (!defined($attr{$name}{"protocol"}));
-
-<<<<<<< HEAD
->>>>>>> 360859e78... * Use Blocking.pm for ping checks so it does not block main thread
-=======
->>>>>>> 7e9277f80... Revert socket changes
   # Create local socket
   my $sock = IO::Socket::INET-> new (
       PeerPort => 48899,
       Blocking => 0,
-<<<<<<< HEAD
-<<<<<<< HEAD
       Proto => $attr{$name}{"protocol"},
       Broadcast => 1) or return "can't bind: $@";
-=======
-      Proto => $attr{$name}{"protocol"}) or return "can't bind: $@";
->>>>>>> 360859e78... * Use Blocking.pm for ping checks so it does not block main thread
-=======
-      Proto => $attr{$name}{"protocol"}) or return "can't bind: $@";
->>>>>>> 7e9277f80... Revert socket changes
   my $select = IO::Select->new($sock);
   $hash->{SOCKET} = $sock;
   $hash->{SELECT} = $select;
 
-<<<<<<< HEAD
-=======
->>>>>>> 2124d5ddc... Change socket logic
-=======
->>>>>>> 7e9277f80... Revert socket changes
   # Note: Milight API specifies 100ms bridge delay for sending commands
   # Define sendInterval
   $attr{$name}{"sendInterval"} = 100 if (!defined($attr{$name}{"sendInterval"}));
@@ -137,46 +107,11 @@ sub MilightBridge_Define($$)
 
   readingsSingleUpdate($hash, "state", "Initialized", 1);
 
-  readingsSingleUpdate($hash, "state", "Initialized", 1);
-
-  delete $hash->{helper}{RUNNING_PID};
-
-  readingsSingleUpdate($hash, "state", "Initialized", 1);
-
   # Set state
   $hash->{SENDFAIL} = 0;
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-  # Get initial bridge state
-  MilightBridge_SetNextTimer($hash);
-=======
-=======
->>>>>>> 4eafd0686... Allow ping state check to be disabled, use state reading instead of hash->{STATE} directly
-  
-  # Get initial bridge state
-  MilightBridge_State($hash);
->>>>>>> f7176f71e... Allow ping state check to be disabled, use state reading instead of hash->{STATE} directly
-=======
 
   # Get initial bridge state
   MilightBridge_SetNextTimer($hash);
->>>>>>> 360859e78... * Use Blocking.pm for ping checks so it does not block main thread
-=======
-
-  if ($init_done) {
-    return MilightBridge_Connect($hash);
-  } else {
-    return MilightBridge_SetNextTimer($hash);
-  }
->>>>>>> 2124d5ddc... Change socket logic
-=======
-  # Get initial bridge state
-  MilightBridge_SetNextTimer($hash);
->>>>>>> 7e9277f80... Revert socket changes
 
   return undef;
 }
@@ -221,56 +156,8 @@ sub MilightBridge_Attr($$$$) {
       $attr{$name}{"checkInterval"} = 10;
       return "checkInterval is required in s (default: 10, min: 0)";
     }
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
     readingsSingleUpdate($hash, "state", "Initialized", 1);
     MilightBridge_SetNextTimer($hash);
-=======
-    ReadingsSingleUpdate($hash, "state", "Initialized", 1);
->>>>>>> f7176f71e... Allow ping state check to be disabled, use state reading instead of hash->{STATE} directly
-=======
-    readingsSingleUpdate($hash, "state", "Initialized", 1);
-<<<<<<< HEAD
->>>>>>> ac190219c... Fix type Readings -> readings
-=======
-    ReadingsSingleUpdate($hash, "state", "Initialized", 1);
->>>>>>> 4eafd0686... Allow ping state check to be disabled, use state reading instead of hash->{STATE} directly
-=======
-    readingsSingleUpdate($hash, "state", "Initialized", 1);
->>>>>>> a4706da79... Fix type Readings -> readings
-=======
-    MilightBridge_SetNextTimer($hash);
->>>>>>> 360859e78... * Use Blocking.pm for ping checks so it does not block main thread
-  }
-  elsif ($attribute eq "protocol")
-  {
-    if (($value eq "tcp" || $value eq "udp"))
-    {
-<<<<<<< HEAD
-      my $protocolchanged = (defined($attr{$name}{"protocol"}) && $attr{$name}{"protocol"} ne $value);
-      $attr{$name}{"protocol"} = $value;
-      return "You need to restart fhem or modify to enable new protocol." if($protocolchanged);
-=======
-      $attr{$name}{"port"} = 100;
-      $hash->{PORT} = $attr{$name}{"port"};
-<<<<<<< HEAD
-      return "MilightBridge: port is required as numeric (default: 8899)";
->>>>>>> c25498bf6... Mqtt: Remove notify function
-=======
-      return "port is required as numeric (default: 8899)";
->>>>>>> 7e9277f80... Revert socket changes
-    }
-    else
-    {
-<<<<<<< HEAD
-      return "protocol must be one of 'tcp|udp'";
-    }
-  }
-=======
-      $hash->{PORT} = $attr{$name}{"port"};
-    }
   }
   elsif ($attribute eq "protocol")
   {
@@ -285,7 +172,6 @@ sub MilightBridge_Attr($$$$) {
       return "protocol must be one of 'tcp|udp'";
     }
   }
->>>>>>> 360859e78... * Use Blocking.pm for ping checks so it does not block main thread
 
   # Handle "disable" attribute by opening/closing connection to device
   elsif ($attribute eq "disable")
@@ -293,43 +179,11 @@ sub MilightBridge_Attr($$$$) {
     # Disable on 1, enable on anything else.
     if ($value eq "1")
     {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
       readingsSingleUpdate($hash, "state", "disabled", 1);
     }
     else
     {
       readingsSingleUpdate($hash, "state", "Initialized", 1);
-=======
-      ReadingsSingleUpdate($hash, "state", "disabled", 1);
-    }
-    else
-    {
-      ReadingsSingleUpdate($hash, "state", "Initialized", 1);
->>>>>>> f7176f71e... Allow ping state check to be disabled, use state reading instead of hash->{STATE} directly
-=======
-      readingsSingleUpdate($hash, "state", "disabled", 1);
-    }
-    else
-    {
-      readingsSingleUpdate($hash, "state", "Initialized", 1);
->>>>>>> ac190219c... Fix type Readings -> readings
-=======
-      ReadingsSingleUpdate($hash, "state", "disabled", 1);
-    }
-    else
-    {
-      ReadingsSingleUpdate($hash, "state", "Initialized", 1);
->>>>>>> 4eafd0686... Allow ping state check to be disabled, use state reading instead of hash->{STATE} directly
-=======
-      readingsSingleUpdate($hash, "state", "disabled", 1);
-    }
-    else
-    {
-      readingsSingleUpdate($hash, "state", "Initialized", 1);
->>>>>>> a4706da79... Fix type Readings -> readings
     }
   }
 
@@ -341,15 +195,6 @@ sub MilightBridge_Attr($$$$) {
 sub MilightBridge_Notify($$)
 {
   my ($hash,$dev) = @_;
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-  Log3 ($hash, 5, "$hash->{NAME}_Notify: Triggered by $dev->{NAME}; @{$dev->{CHANGED}}");
-
-  return if($dev->{NAME} ne "global");
->>>>>>> 360859e78... * Use Blocking.pm for ping checks so it does not block main thread
-=======
->>>>>>> f9da6ef7f... Set NOTIFYDEV
 
   if(grep(m/^(INITIALIZED|REREADCFG|DEFINED.*|MODIFIED.*|DELETED.*)$/, @{$dev->{CHANGED}}))
   {
@@ -364,85 +209,11 @@ sub MilightBridge_Notify($$)
 sub MilightBridge_SetNextTimer($)
 {
   my ($hash) = @_;
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
   # Check state every X seconds
   RemoveInternalTimer($hash);
   my $interval=AttrVal($hash->{NAME}, "checkInterval", "10");
   if ($interval > 0) {
     InternalTimer(gettimeofday() + $interval, "MilightBridge_DoPingStart", $hash, 0);
-=======
-  
-  if (AttrVal($hash->{NAME}, "checkInterval", "10") == 0)
-  {
-    Log3 ( $hash, 5, "$hash->{NAME}_State: Bridge status disabled");
-    return undef;
-  }
-  
-  if (AttrVal($hash->{NAME}, "checkInterval", "10") == 0)
-  {
-    Log3 ( $hash, 5, "$hash->{NAME}_State: Bridge status disabled");
-    return undef;
-=======
-=======
-
-  MilightBridge_Connect($hash) if (!defined($hash->{SOCKET}));
->>>>>>> 2124d5ddc... Change socket logic
-=======
->>>>>>> 7e9277f80... Revert socket changes
-  # Check state every X seconds
-  RemoveInternalTimer($hash);
-  my $interval=AttrVal($hash->{NAME}, "checkInterval", "10");
-  if ($interval > 0) {
-    InternalTimer(gettimeofday() + $interval, "MilightBridge_DoPingStart", $hash, 0);
-  }
-}
-
-#####################################
-# Prepare and start the blocking call in new thread
-sub MilightBridge_DoPingStart($)
-{
-  my ($hash) = @_;
-
-  return undef if (IsDisabled($hash->{NAME}));
-
-  my $timeout = 2;
-  my $mode = 'udp';
-  $mode = 'tcp' if(defined($attr{$hash->{NAME}}{tcpPing}));
-
-  my $arg = $hash->{NAME}."|".$hash->{HOST}."|".$mode."|".$timeout;
-  my $blockingFn = "MilightBridge_DoPing";
-  my $finishFn = "MilightBridge_DoPingDone";
-  my $abortFn = "MilightBridge_DoPingAbort";
-
-  if (!(exists($hash->{helper}{RUNNING_PID}))) {
-    $hash->{helper}{RUNNING_PID} =
-          BlockingCall($blockingFn, $arg, $finishFn, $timeout, $abortFn, $hash);
-  } else {
-    Log3 $hash, 3, "$hash->{NAME} Blocking Call running no new started";
-    MilightBridge_SetNextTimer($hash);
->>>>>>> 360859e78... * Use Blocking.pm for ping checks so it does not block main thread
-  }
-}
-
-#####################################
-# BlockingCall DoPing in separate thread
-sub MilightBridge_DoPing(@)
-{
-  my ($string) = @_;
-  my ($name, $host, $mode, $timeout) = split("\\|", $string);
-
-  Log3 ($name, 5, $name."_DoPing: Executing ping");
-
-  # check via ping
-  my $p;
-<<<<<<< HEAD
-  if(defined($attr{$hash->{NAME}}{tcpPing}))
-  {
-    $p = Net::Ping->new('tcp');
->>>>>>> f7176f71e... Allow ping state check to be disabled, use state reading instead of hash->{STATE} directly
   }
 }
 
@@ -484,14 +255,6 @@ sub MilightBridge_DoPing(@)
   # check via ping
   my $p;
   $p = Net::Ping->new($mode);
-<<<<<<< HEAD
-  my $result = $p->ping($host, $timeout);
-  $p->close();
-=======
-  $p = Net::Ping->new($mode);
-
-=======
->>>>>>> 5989ab71f... Fix uninitialised variable
   my $result = $p->ping($host, $timeout);
   $p->close();
 
@@ -509,37 +272,6 @@ sub MilightBridge_DoPingDone($)
 
   my $status = "ok";
   $status = "unreachable" if !($result);
->>>>>>> 360859e78... * Use Blocking.pm for ping checks so it does not block main thread
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-  $result="" if !(defined($result));
-  return "$name|$result";
-}
-=======
-=======
->>>>>>> 4eafd0686... Allow ping state check to be disabled, use state reading instead of hash->{STATE} directly
-  # Update readings
-  readingsBeginUpdate($hash);
-  readingsBulkUpdate($hash, "state", $status);
-  readingsBulkUpdate( $hash, "sendFail", $hash->{SENDFAIL});
-  readingsEndUpdate($hash, 1);
-<<<<<<< HEAD
->>>>>>> f7176f71e... Allow ping state check to be disabled, use state reading instead of hash->{STATE} directly
-=======
->>>>>>> 4eafd0686... Allow ping state check to be disabled, use state reading instead of hash->{STATE} directly
-
-<<<<<<< HEAD
-#####################################
-# Ping thread completed
-sub MilightBridge_DoPingDone($)
-{
-  my ($string) = @_;
-  my ($name, $result) = split("\\|", $string);
-  my $hash = $defs{$name};
-
-  my $status = "ok";
-  $status = "unreachable" if !($result);
 
   # Update readings
   readingsBeginUpdate($hash);
@@ -547,8 +279,6 @@ sub MilightBridge_DoPingDone($)
   readingsBulkUpdate( $hash, "sendFail", $hash->{SENDFAIL});
   readingsEndUpdate($hash, 1);
 
-=======
->>>>>>> 360859e78... * Use Blocking.pm for ping checks so it does not block main thread
   delete($hash->{helper}{RUNNING_PID});
   MilightBridge_SetNextTimer($hash);
 }
@@ -746,10 +476,6 @@ sub MilightBridge_CmdQueue_Send(@)
       <b>checkInterval</b><br/>
          Default: 10s. Time after the bridge connection is re-checked.<br>
          If this is set to 0 checking is disabled and state = "Initialized".
-    </li>
-    <li>
-      <b>protocol</b><br/>
-         Default: udp. Change to tcp if you have enabled tcp mode on your bridge.
     </li>
     <li>
       <b>protocol</b><br/>
