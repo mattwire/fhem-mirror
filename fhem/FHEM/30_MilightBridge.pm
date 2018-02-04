@@ -63,13 +63,13 @@ sub MilightBridge_Define($$)
 
   return "Usage: define <name> MilightBridge <host/ip:port>"  if(@args < 3);
 
-  my ($name, $type, $host) = @args;
+  my ($name, $type, $hostandport) = @args;
 
   $hash->{Clients} = ":MilightDevice:";
   my %matchList = ( "1:MilightDevice" => ".*" );
   $hash->{MatchList} = \%matchList;
 
-  my ($host, $port) = split(":", $host);
+  my ($host, $port) = split(":", $hostandport);
   # Parameters
   $hash->{HOST} = $host;
   # Set Port (Default 8899, old bridge (V2) uses 50000
