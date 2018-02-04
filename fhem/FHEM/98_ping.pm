@@ -3,19 +3,7 @@
 #
 #     98_ping.pm
 #     FHEM module to check remote network device using ping.
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 #
-=======
-#     
->>>>>>> 55a7bb1f9... Add new module ping
-=======
-#     
->>>>>>> 3201e1d64... Add new module ping
-=======
-#
->>>>>>> 360859e78... * Use Blocking.pm for ping checks so it does not block main thread
 #     Author: Matthew Wire (mattwire)
 #
 #     This file is part of fhem.
@@ -39,25 +27,7 @@ package main;
 
 use strict;
 use warnings;
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 use Blocking;
-=======
-=======
->>>>>>> 3201e1d64... Add new module ping
-
-#use IO::Handle;
-#use IO::Socket;
-#use IO::Select;
-#use Time::HiRes;
-<<<<<<< HEAD
->>>>>>> 55a7bb1f9... Add new module ping
-=======
->>>>>>> 3201e1d64... Add new module ping
-=======
-use Blocking;
->>>>>>> 360859e78... * Use Blocking.pm for ping checks so it does not block main thread
 use Net::Ping;
 
 sub ping_Initialize($)
@@ -67,23 +37,7 @@ sub ping_Initialize($)
   $hash->{DefFn}    = "ping_Define";
   $hash->{UndefFn}  = "ping_Undefine";
   $hash->{AttrFn}   = "ping_Attr";
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
   $hash->{AttrList} = "disable:1 checkInterval minFailCount ".$readingFnAttributes;
-=======
-  $hash->{AttrList} = "disable:0,1 checkInterval ".$readingFnAttributes;
->>>>>>> 55a7bb1f9... Add new module ping
-=======
-  $hash->{AttrList} = "disable:0,1 checkInterval ".$readingFnAttributes;
->>>>>>> 3201e1d64... Add new module ping
-=======
-  $hash->{AttrList} = "disable:0,1 checkInterval minFailCount ".$readingFnAttributes;
->>>>>>> e8fed06f9... Add minFailCount to allow multiple failures before reporting
-=======
-  $hash->{AttrList} = "disable:1 checkInterval minFailCount ".$readingFnAttributes;
->>>>>>> 559325cee... Minor fixes
 
   return undef;
 }
@@ -93,19 +47,7 @@ sub ping_Initialize($)
 sub ping_Define($$)
 {
   my ($hash, $def) = @_;
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
   my @args = split("[ \t][ \t]*", $def);
-=======
-  my @args = split("[ \t][ \t]*", $def); 
->>>>>>> 55a7bb1f9... Add new module ping
-=======
-  my @args = split("[ \t][ \t]*", $def); 
->>>>>>> 3201e1d64... Add new module ping
-=======
-  my @args = split("[ \t][ \t]*", $def);
->>>>>>> 360859e78... * Use Blocking.pm for ping checks so it does not block main thread
 
   return "Usage: define <name> ping <host/ip> <mode> <timeout>"  if(@args < 5);
 
@@ -115,20 +57,12 @@ sub ping_Define($$)
   $hash->{HOST} = $host;
   $hash->{MODE} = lc($mode);
   $hash->{TIMEOUT} = $timeout;
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
   $hash->{FAILCOUNT} = 0;
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 360859e78... * Use Blocking.pm for ping checks so it does not block main thread
 
   delete $hash->{helper}{RUNNING_PID};
 
   readingsSingleUpdate($hash, "state", "Initialized", 1);
 
-<<<<<<< HEAD
   return "ERROR: mode must be one of tcp,udp,icmp" if ($hash->{MODE} !~ "tcp|udp|icmp");
   return "ERROR: timeout must be 0 or higher." if (($hash->{TIMEOUT} !~ /^\d*$/) || ($hash->{TIMEOUT} < 0));
 
@@ -136,34 +70,6 @@ sub ping_Define($$)
   $attr{$name}{"event-on-change-reading"} = "state" if (!defined($attr{$name}{"event-on-change-reading"}));
 
   ping_SetNextTimer($hash);
-=======
-=======
->>>>>>> 3201e1d64... Add new module ping
-=======
-  $hash->{FAILCOUNT} = 0;
->>>>>>> e8fed06f9... Add minFailCount to allow multiple failures before reporting
-=======
-  readingsSingleUpdate($hash, "state", "Initialized", 1);
->>>>>>> 559325cee... Minor fixes
-  
-=======
->>>>>>> 360859e78... * Use Blocking.pm for ping checks so it does not block main thread
-  return "ERROR: mode must be one of tcp,udp,icmp" if ($hash->{MODE} !~ "tcp|udp|icmp");
-  return "ERROR: timeout must be 0 or higher." if (($hash->{TIMEOUT} !~ /^\d*$/) || ($hash->{TIMEOUT} < 0));
-
-  $attr{$name}{"checkInterval"} = 10 if (!defined($attr{$name}{"checkInterval"}));
-  $attr{$name}{"event-on-change-reading"} = "state" if (!defined($attr{$name}{"event-on-change-reading"}));
-<<<<<<< HEAD
-  
-  ping_State($hash);
-<<<<<<< HEAD
->>>>>>> 55a7bb1f9... Add new module ping
-=======
->>>>>>> 3201e1d64... Add new module ping
-=======
-
-  ping_SetNextTimer($hash);
->>>>>>> 360859e78... * Use Blocking.pm for ping checks so it does not block main thread
 
   return undef;
 }
@@ -174,19 +80,7 @@ sub ping_Undefine($$)
 {
   my ($hash,$arg) = @_;
   RemoveInternalTimer($hash);
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
   BlockingKill($hash->{helper}{RUNNING_PID}) if(defined($hash->{helper}{RUNNING_PID}));
-=======
-  
->>>>>>> 55a7bb1f9... Add new module ping
-=======
-  
->>>>>>> 3201e1d64... Add new module ping
-=======
-  BlockingKill($hash->{helper}{RUNNING_PID}) if(defined($hash->{helper}{RUNNING_PID}));
->>>>>>> 360859e78... * Use Blocking.pm for ping checks so it does not block main thread
   return undef;
 }
 
@@ -195,9 +89,6 @@ sub ping_Undefine($$)
 sub ping_Attr($$$$) {
   my ($command,$name,$attribute,$value) = @_;
   my $hash = $defs{$name};
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 
   Log3 ($hash, 5, "$hash->{NAME}_Attr: Attr $attribute; Value $value");
 
@@ -314,164 +205,6 @@ sub ping_DoPingAbort($)
   delete($hash->{helper}{RUNNING_PID});
   Log3 $hash->{NAME}, 3, "BlockingCall for ".$hash->{NAME}." was aborted";
   ping_SetNextTimer($hash);
-=======
-=======
->>>>>>> 3201e1d64... Add new module ping
-  
-=======
-
->>>>>>> 360859e78... * Use Blocking.pm for ping checks so it does not block main thread
-  Log3 ($hash, 5, "$hash->{NAME}_Attr: Attr $attribute; Value $value");
-
-  if ($command eq "set") {
-
-    if ($attribute eq "checkInterval")
-    {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-      readingsSingleUpdate($hash, "state", "disabled", 1);
-    }
-    else
-    {
-      readingsSingleUpdate($hash, "state", "Initialized", 1);
-=======
-      ReadingsSingleUpdate($hash, "state", "disabled", 1);
-    }
-    else
-    {
-      ReadingsSingleUpdate($hash, "state", "Initialized", 1);
->>>>>>> 3201e1d64... Add new module ping
-=======
-      readingsSingleUpdate($hash, "state", "disabled", 1);
-=======
-      if (($value !~ /^\d*$/) || ($value < 5))
-      {
-        $attr{$name}{"checkInterval"} = 10;
-        return "checkInterval is required in s (default: 10, min: 5)";
-      }
->>>>>>> 559325cee... Minor fixes
-    }
-    # Handle "disable" attribute by opening/closing connection to device
-    elsif ($attribute eq "disable")
-    {
-<<<<<<< HEAD
-      readingsSingleUpdate($hash, "state", "Initialized", 1);
->>>>>>> 58bb06683... Fix typos
-=======
-      # Disable on 1, enable on anything else.
-      if ($value eq "1")
-      {
-        readingsSingleUpdate($hash, "state", "disabled", 1);
-      }
-      else
-      {
-        readingsSingleUpdate($hash, "state", "Initialized", 1);
-      }
->>>>>>> 559325cee... Minor fixes
-    }
-  }
-
-  return undef;
-}
-
-#####################################
-# Set next timer for ping check
-sub ping_SetNextTimer($)
-{
-  my ($hash) = @_;
-  # Check state every X seconds
-  RemoveInternalTimer($hash);
-  InternalTimer(gettimeofday() + AttrVal($hash->{NAME}, "checkInterval", "10"), "ping_Start", $hash, 0);
-}
-
-#####################################
-# Prepare and start the blocking call in new thread
-sub ping_Start($)
-{
-  my ($hash) = @_;
-
-  return undef if (IsDisabled($hash->{NAME}));
-
-  my $timeout = $hash->{TIMEOUT};
-  my $arg = $hash->{NAME}."|".$hash->{HOST}."|".$hash->{MODE}."|".$hash->{TIMEOUT};
-  my $blockingFn = "ping_DoPing";
-  my $finishFn = "ping_DoPingDone";
-  my $abortFn = "ping_DoPingAbort";
-
-  if (!(exists($hash->{helper}{RUNNING_PID}))) {
-    $hash->{helper}{RUNNING_PID} =
-          BlockingCall($blockingFn, $arg, $finishFn, $timeout, $abortFn, $hash);
-  } else {
-    Log3 $hash, 3, "$hash->{NAME} Blocking Call running no new started";
-    ping_SetNextTimer($hash);
-  }
-}
-
-#####################################
-# BlockingCall DoPing in separate thread
-sub ping_DoPing(@)
-{
-  my ($string) = @_;
-  my ($name, $host, $mode, $timeout) = split("\\|", $string);
-
-  Log3 ($name, 5, $name."_DoPing: Executing ping");
-
-  # check via ping
-  my $p;
-  $p = Net::Ping->new($mode);
-
-  my $result = $p->ping($host, $timeout);
-  $p->close();
-
-  return "$name|$result";
-}
-
-#####################################
-# Ping thread completed
-sub ping_DoPingDone($)
-{
-  my ($string) = @_;
-  my ($name, $result) = split("\\|", $string);
-  my $hash = $defs{$name};
-
-  if ($result) {
-    # State is ok
-    $hash->{FAILCOUNT} = 0;
-    readingsSingleUpdate($hash, "state", "ok", 1);
-  } else {
-    # Increment failcount and report unreachable if over limit
-    $hash->{FAILCOUNT} += 1;
-    if ($hash->{FAILCOUNT} >= AttrVal($hash->{NAME}, "minFailCount", 1)) {
-      readingsSingleUpdate($hash, "state", "unreachable", 1);
-    }
-  }
-<<<<<<< HEAD
-  
-  # Check state every X seconds  
-  RemoveInternalTimer($hash);
-  InternalTimer(gettimeofday() + AttrVal($hash->{NAME}, "checkInterval", "10"), "ping_State", $hash, 0);
-  
-  return undef;
-<<<<<<< HEAD
->>>>>>> 55a7bb1f9... Add new module ping
-=======
->>>>>>> 3201e1d64... Add new module ping
-=======
-
-  delete($hash->{helper}{RUNNING_PID});
-  ping_SetNextTimer($hash);
-}
-
-#####################################
-# Ping thread timeout
-sub ping_DoPingAbort($)
-{
-  my ($hash) = @_;
-  delete($hash->{helper}{RUNNING_PID});
-  Log3 $hash->{NAME}, 3, "BlockingCall for ".$hash->{NAME}." was aborted";
-  ping_SetNextTimer($hash);
->>>>>>> 360859e78... * Use Blocking.pm for ping checks so it does not block main thread
 }
 
 1;
@@ -511,22 +244,10 @@ sub ping_DoPingAbort($)
       <b>checkInterval</b><br/>
          Default: 10s. Time after the bridge connection is re-checked.
     </li>
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> e8fed06f9... Add minFailCount to allow multiple failures before reporting
     <li>
       <b>minFailCount</b><br/>
          Default: 1. Number of failures before reporting "unreachable".
     </li>
-<<<<<<< HEAD
-=======
->>>>>>> 55a7bb1f9... Add new module ping
-=======
->>>>>>> 3201e1d64... Add new module ping
-=======
->>>>>>> e8fed06f9... Add minFailCount to allow multiple failures before reporting
   </ul>
 </ul>
 
