@@ -78,7 +78,7 @@ my @pos = ();
 my $total = 0;
 my @MAX_HT=devspec2array("DEF=HeatingThermostat.*");
  foreach(@MAX_HT) {
-  $valve=ReadingsVal($_, "valveposition", "101");
+  $valve=ReadingsVal($_, "valveposition", "0");
   push(@pos,$valve);
   $total=$total+$valve;
  }
